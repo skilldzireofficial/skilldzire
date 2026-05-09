@@ -20,19 +20,20 @@ async function fetchStatus() {
         const tbody = document.getElementById('statusContent');
         const isPending = data.status === 'Pending';
 
+       const isApproved = data.status === 'Approved';
+
         tbody.innerHTML = `
             <tr>
                 <td>${data.name}</td>
-                <td>${data.internshipName}</td>
-                <td>
-                    <span class="${isPending ? 'status-pending' : 'status-approved'}">
-                        ${data.status}
+                <td>${data.course}</td> <td>
+                    <span class="${isApproved ? 'status-approved' : 'status-pending'}">
+                        ${data.status} ${isApproved ? '✅' : ''}
                     </span>
                 </td>
                 <td>
-                    ${isPending ? 
-                        `<button class="btn-edit" onclick="openEdit('${data.name}')">Edit Details</button>` : 
-                        `<span style="color:#4caf50">Verified ✅</span>`
+                    ${isApproved ? 
+                        `<span style="color:#4caf50; font-weight:600;">Verified ✅</span>` : 
+                        `<button class="btn-edit" onclick="openEdit('${data.name}', '${data.course}')">Edit Details</button>`
                     }
                 </td>
             </tr>

@@ -1,4 +1,4 @@
-// Function to show custom modal instead of alert
+// 1. Custom Modal Control (Old code lo unnadhe mava)
 function showStatusModal(title, message) {
     document.getElementById('modalTitle').innerText = title;
     document.getElementById('modalMessage').innerText = message;
@@ -9,47 +9,54 @@ function closeStatusModal() {
     document.getElementById('statusModal').style.display = 'none';
 }
 
-async function checkStatus() {
-    const email = document.getElementById('searchEmail').value;
+// 2. Main Verification Logic (Modified for Certificate ID)
+async function verifyCertificate() {
+    // Input field ID ippudu 'searchID' (verify.html lo marchali idi)
+    const certID = document.getElementById('searchID').value.trim();
     const resultBox = document.getElementById('resultBox');
     
-    // Check if email is empty
-    if (!email) {
-        showStatusModal("Empty Input", "Please provide a registered email address to check status.");
+    if (!certID) {
+        showStatusModal("Empty Input");
         return;
     }
 
     try {
-        const response = await fetch(`https://skilldzire.onrender.com/api/cert/status/${email}`);
+        // Backend kotha route ki request veltundi mava
+        const response = await fetch(`https://skilldzire.onrender.com/api/cert/verify/${certID}`);
         const data = await response.json();
 
         if (response.ok) {
-            // Show the result card with data
+            // Result box lo details display chesthunnam
             resultBox.style.display = "block";
-            document.getElementById('resName').innerText = data.name;
+            document.getElementById('resName').innerText = data.userName;
             document.getElementById('resCourse').innerText = data.course;
-            document.getElementById('resStatus').innerText = data.status;
-
-            if (data.status === 'Pending') {
-                document.getElementById('resNote').innerText = "* Your request is currently under review. Expect an update within 3-4 hours.";
-            } else {
-                document.getElementById('resNote').innerText = "* Congratulations! Your certificate has been issued to your email.";
-            }
+            document.getElementById('resStatus').innerText = "VERIFIED ✅";
+            document.getElementById('resStatus').style.color = "#4caf50"; // Green color
+            document.getElementById('resNote').innerText = `* Verified Student of ${data.collegeName || 'SkillDzire'}.`;
         } else {
-            // If email is not found in DB
             resultBox.style.display = "none";
-            showStatusModal("No Record Found", "We couldn't find any request associated with this email address.");
+            showStatusModal("Invalid ID, No records Found in database!");
         }
     } catch (error) {
         console.error("Connection Error:", error);
-        showStatusModal("Server Error", "Unable to reach the server. Please try again later.");
+        showStatusModal("Server Error!");
     }
 }
 
-// Close modal when clicking outside of it
+// 3. QR Code Logic (Auto-load from URL)
+window.onload = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const idFromURL = urlParams.get('id');
+    
+    if (idFromURL) {
+        // QR scan chesinappudu URL lo ID unte, direct ga input lo petti verify chestundi
+        document.getElementById('searchID').value = idFromURL;
+        verifyCertificate();
+    }
+};
+
+// Modal close on outside click
 window.onclick = function(event) {
     const modal = document.getElementById('statusModal');
-    if (event.target == modal) {
-        closeStatusModal();
-    }
+    if (event.target == modal) closeStatusModal();
 }

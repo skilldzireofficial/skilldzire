@@ -54,6 +54,27 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
+app.get('/verification', (req,res) => {
+    res.sendFile(path.join(__dirname, '../frontend/verify.html'))
+})
+
+app.get('/checkstatus', (req,res) => {
+    res.sendFile(path.join(__dirname, '../frontend/status.html'))
+})
+
+app.get('/adminpage', (req,res) => {
+    res.sendFile(path.join(__dirname, '../frontend/admin.html'))
+})
+
+app.get('/paymentpage', (req,res) => {
+    res.sendFile(path.join(__dirname, '../frontend/payment.html'))
+})
+
+
+
+app.get('/admin-login', (req,res) => {
+    res.sendFile(path.join(__dirname, '../frontend/admin-login.html'))
+})
 
 
 // 6. Error Handling for undefined routes

@@ -6,17 +6,12 @@ const path = require('path');
  * Function: Generate Certificate PDF
  * Nee backend/assets/template.png paina details print chestundi
  */
-const generateCertificate = async (userData) => {
-    return new Promise((resolve, reject) => {
-        try {
-            // 1. Create PDF (Landscape for certificates)
-            const doc = new PDFDocument({
-                size: 'A4',
-                layout: 'landscape',
-                margin: 0
-            });
+const QRCode = require('qrcode'); // Mava idi install chey (npm i qrcode)
 
-            // Path Setup: assets folder lo certificate save avtundi temporary ga
+const generateCertificate = async (userData) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
             const fileName = `Cert_${userData._id}.pdf`;
             const filePath = path.join(__dirname, '../assets', fileName);
             const templatePath = path.join(__dirname, '../assets/template.png');
@@ -24,46 +19,41 @@ const generateCertificate = async (userData) => {
             const stream = fs.createWriteStream(filePath);
             doc.pipe(stream);
 
-            // 2. Add Background Template
+            // 1. Template Image (Base)
             if (fs.existsSync(templatePath)) {
                 doc.image(templatePath, 0, 0, { width: 841.89, height: 595.28 });
-            } else {
-                console.error("❌ Template image missing in backend/assets/template.png");
             }
 
-            // 3. Add User Details (Positions nee template batti adjust chey mava)
-            doc.fillColor('#1a1a1a'); // Dark color for text
+            // 2. --- USER NAME (Bold & Center) ---
+            // Font size 38 petti Helvetica-Bold vadutunnam mava
+            doc.fillColor('#1a1a1a')
+               .fontSize(38)
+               .font('Helvetica-Bold')
+               .text(userData.userName.toUpperCase(), 0, 275, { align: 'center' });
 
-            // User Name
-            doc.fontSize(35).font('Helvetica-Bold')
-               .text(userData.userName, 0, 270, { align: 'center' });
+            // 3. --- COURSE DETAILS (Bold) ---
+            doc.fontSize(22)
+               .font('Helvetica-Bold')
+               .text(userData.course, 0, 355, { align: 'center' });
 
-            // Course Details
-            doc.fontSize(20).font('Helvetica')
-               .text(`Successfully completed the ${userData.course} internship`, 0, 335, { align: 'center' });
-
-            // College Name
-            doc.fontSize(16).font('Helvetica-Oblique')
-               .text(`at ${userData.collegeName}`, 0, 370, { align: 'center' });
-
-            // Duration
-            doc.fontSize(14).font('Helvetica')
-               .text(`From: ${userData.duration}`, 0, 420, { align: 'center' });
-
-            // Unique Certificate ID (Footer)
+            // 4. --- QR CODE (Center Placement) ---
+            // Nuvvu annattu QR Code center lo ravali ante X position ni sagam lo set cheyali
             const certID = `SD-${userData._id.toString().slice(-6).toUpperCase()}`;
-            doc.fontSize(10).fillColor('#555')
-               .text(`Verify at: skilldzire.com | ID: ${certID}`, 50, 540);
+            const verifyURL = `https://skilldzire.onrender.com/verify.html?id=${certID}`;
+            const qrCodeData = await QRCode.toDataURL(verifyURL);
+            
+            // X=380 (Center of A4 Landscape), Y=440 (Bottom section)
+            doc.image(qrCodeData, 380, 440, { width: 85, height: 85 });
+
+            // 5. --- CERTIFICATE ID (Bold & Left) ---
+            // "Certificate ID:" label pakkana exact ga ravali
+            doc.fontSize(12)
+               .font('Helvetica-Bold')
+               .fillColor('#d63384') // Highlight color
+               .text(certID, 185, 518); 
 
             doc.end();
-
-            stream.on('finish', () => {
-                console.log(`✅ PDF Generated: ${fileName}`);
-                resolve(filePath);
-            });
-
-            stream.on('error', (err) => reject(err));
-
+            stream.on('finish', () => resolve(fileName));
         } catch (error) {
             reject(error);
         }

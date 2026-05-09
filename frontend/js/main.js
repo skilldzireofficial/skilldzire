@@ -33,15 +33,16 @@ document.getElementById('certificateForm').addEventListener('submit', function(e
     }
 
     // Create an object with user details
-    const formData = {
+  const formData = {
         userName: userName,
         userEmail: userEmail,
         collegeName: collegeName,
         branchRoll: branchRoll,
         course: course,
-        duration: `${fromDate} to ${toDate}`
+        duration: `${fromDate} to ${toDate}`,
+        startDate: fromDate, // Extra fields for certificate
+        endDate: toDate
     };
-
     // Store this data in sessionStorage (Temporary browser memory)
     // Deenivalla payment page lo manam ee data ni vadochu
     sessionStorage.setItem('pendingCertData', JSON.stringify(formData));

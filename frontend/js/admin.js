@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const token = sessionStorage.getItem('admin_token');
+    
+    if (!token || token !== "skilldzire@4404") {
+        window.location.href = "/admin-login"; // Login lekapothe back pampichey
+        return;
+    }
+    fetchRequests();
+});
+
+// Logout function (Optional)
+function logout() {
+    localStorage.removeItem('admin_token');
+    window.location.href = "/admin-login";
+}
+
+document.addEventListener('DOMContentLoaded', () => {
     fetchRequests();
 });
 
@@ -28,13 +44,14 @@ async function fetchRequests() {
         }
 
         tbody.innerHTML = '';
+    
         data.forEach(req => {
             const row = `
                 <tr>
                     <td><b>${req.userName}</b></td>
                     <td>${req.course}</td>
                     <td>${req.userEmail}</td>
-                    <td>${req.duration}</td>
+                    <td><code style="color: #FF6600; font-weight:bold;">${req.utrNumber || 'N/A'}</code></td>
                     <td><span class="badge">${req.status}</span></td>
                     <td class="action-btns">
                         <button class="btn-table approve" onclick="approveRequest('${req._id}', event)">Approve</button>
@@ -44,39 +61,37 @@ async function fetchRequests() {
             `;
             tbody.innerHTML += row;
         });
+
     } catch (err) {
         tbody.innerHTML = '<tr><td colspan="6" class="loader" style="color:red;">Failed to connect to server.</td></tr>';
     }
 }
 
 // 2. Approve Request
-async function approveRequest(id, event) {
-    if(!confirm("Do you want to approve and send the certificate email?")) return;
-
+async function approveRequest(id) {
     try {
         const btn = event.target;
-        const originalText = btn.innerText;
-        btn.innerText = "Sending...";
+        btn.innerText = "Generating PDF...";
         btn.disabled = true;
 
+        // Backend ki request pamputhunnam
         const response = await fetch(`https://skilldzire.onrender.com/api/admin/approve/${id}`, {
             method: 'POST'
         });
         const result = await response.json();
 
         if(result.success) {
-            showStatusModal("Success", "Certificate has been generated and sent to the user successfully.");
+            showStatusModal("Success ✅", "Certificate ID Created & PDF Sent to User Email!");
             fetchRequests();
         } else {
-            showStatusModal("Error", "Failed to process approval: " + result.message);
-            btn.innerText = originalText;
+            showStatusModal("Error", result.message);
+            btn.innerText = "Approve";
             btn.disabled = false;
         }
     } catch (err) {
-        showStatusModal("Server Error", "Something went wrong while connecting to the server.");
+        showStatusModal("Server Error", "Connection failed mava!");
     }
 }
-
 // 3. Delete Request
 async function deleteRequest(id) {
     if(!confirm("Are you sure you want to delete this record?")) return;

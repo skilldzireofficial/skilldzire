@@ -38,9 +38,9 @@
             <p style="color: #888; margin-bottom: 25px; font-size: 0.9rem;">Check your internship certificate issuance status.</p>
             
             <div class="input-box">
-                <input type="email" id="searchEmail" placeholder="Enter registered email" required>
+             <input type="text" id="searchID" placeholder="Enter Certificate ID (e.g. SD-A1B2C3)" required>
             </div>
-            <button class="btn-primary" onclick="checkStatus()" style="width: 100%; margin-top: 10px;">Check Status</button>
+           <button class="btn-primary" onclick="verifyCertificate()" style="width: 100%; margin-top: 10px;">Verify Now</button>
 
             <div id="resultBox" class="result-box">
                 <p><b>Candidate:</b> <span id="resName">--</span></p>

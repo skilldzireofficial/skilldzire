@@ -41,7 +41,7 @@ async function notifyAdmin() {
         const response = await fetch('https://skilldzire.onrender.com/api/cert/request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify({...data, utrNumber: utrValue})
         });
 
         const result = await response.json();
@@ -68,52 +68,24 @@ function closeUTRModal() {
     document.getElementById('utrModal').style.display = 'none';
 }
 
+
 async function processUTRSubmission() {
     const utrField = document.getElementById('utrNumber');
     const confirmBtn = document.getElementById('confirmBtn');
     const utrValue = utrField.value.trim();
-    const userId = localStorage.getItem('userId'); // Register ayinappudu save chesina ID
+    
+    // Retrieve the form data stored in sessionStorage from main.js
+    const userData = JSON.parse(sessionStorage.getItem('pendingCertData')); 
 
-    // Professional Validation (12 Digits check)
+    // Validation for 12-digit UTR
     if (!/^\d{12}$/.test(utrValue)) {
-        alert("Invalid Transaction ID. Please provide the 12-digit UTR number.");
+        alert("Please enter a valid 12-digit UTR number.");
         return;
     }
 
-    confirmBtn.disabled = true;
-    confirmBtn.innerText = "Processing...";
-
-    try {
-        const response = await fetch('https://skilldzire.onrender.com/api/submit-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, utrNumber: utrValue })
-        });
-
-        if (response.ok) {
-            alert("Verification details sent to administrator. Please allow 3-4 hours for processing.");
-            window.location.href = "status.html"; // Status check cheskovadaniki redirect
-        } else {
-            alert("Submission failed. Please verify your connection and try again.");
-            confirmBtn.disabled = false;
-            confirmBtn.innerText = "Verify Submission";
-        }
-    } catch (error) {
-        alert("Server connection error. Please try again later.");
-        confirmBtn.disabled = false;
-        confirmBtn.innerText = "Verify Submission";
-    }
-}
-
-async function processUTRSubmission() {
-    const utrField = document.getElementById('utrNumber');
-    const confirmBtn = document.getElementById('confirmBtn');
-    const utrValue = utrField.value.trim();
-    const userId = localStorage.getItem('userId');
-
-    // Verification 1: Check if UTR is exactly 12 digits
-    if (!/^\d{12}$/.test(utrValue)) {
-        alert("Invalid Transaction ID. Please enter the correct 12-digit UTR number.");
+    if (!userData) {
+        alert("Session expired. Please fill the form again.");
+        window.location.href = '/';
         return;
     }
 
@@ -121,24 +93,25 @@ async function processUTRSubmission() {
     confirmBtn.innerText = "Submitting...";
 
     try {
-        const response = await fetch('https://skilldzire.onrender.com/api/submit-payment', {
+        // Send UTR + User Details to the backend request route
+        const response = await fetch('https://skilldzire.onrender.com/api/cert/request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, utrNumber: utrValue })
+            body: JSON.stringify({ ...userData, utrNumber: utrValue })
         });
 
         if (response.ok) {
-            // Success Modal Trigger
             document.getElementById('utrModal').style.display = 'none';
-            alert("Payment details submitted successfully. Our team will verify the transaction within 3-4 hours.");
-            window.location.href = "status.html";
+            document.getElementById('qrModal').style.display = 'none';
+            document.getElementById('successModal').style.display = 'flex';
+            sessionStorage.removeItem('pendingCertData');
         } else {
-            alert("An error occurred during submission. Please try again.");
+            alert("Submission failed. Please try again.");
             confirmBtn.disabled = false;
             confirmBtn.innerText = "Verify Submission";
         }
     } catch (error) {
-        alert("Unable to connect to the server. Please check your internet connection.");
+        alert("Server error. Please check your connection.");
         confirmBtn.disabled = false;
         confirmBtn.innerText = "Verify Submission";
     }

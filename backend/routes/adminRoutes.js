@@ -47,4 +47,31 @@ router.delete('/reject/:id', async (req, res) => {
     }
 });
 
+// 4. Submit Payment Details (UTR)
+router.post('/submit-payment', async (req, res) => {
+    try {
+        const { userId, utrNumber } = req.body;
+        
+        // Database lo update cheyali
+        const user = await Certificate.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not Found!" });
+
+        user.utrNumber = utrNumber;
+        user.paymentStatus = 'Paid';
+        await user.save();
+
+        // Admin (Neeku) Alert Email
+        await sendAdminNotification({
+            userName: user.userName,
+            userEmail: user.userEmail,
+            utr: utrNumber
+        });
+
+        res.json({ success: true, message: "Payment details saved!" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Payment submission failed!" });
+    }
+});
+
 module.exports = router;

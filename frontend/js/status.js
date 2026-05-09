@@ -1,4 +1,4 @@
-const API_URL = "https://skilldzire.onrender.com/api"; // Replace with your Render URL
+const API_URL = "https://skilldzire.onrender.com"; // Replace with your Render URL
 const userId = localStorage.getItem('userId');
 
 document.addEventListener('DOMContentLoaded', () => {

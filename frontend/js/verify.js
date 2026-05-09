@@ -20,7 +20,7 @@ async function checkStatus() {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/cert/status/${email}`);
+        const response = await fetch(`https://skilldzire.onrender.com/api/cert/status/${email}`);
         const data = await response.json();
 
         if (response.ok) {

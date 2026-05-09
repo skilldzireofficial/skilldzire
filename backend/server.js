@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const axios = require('axios');
 
 // Load environment variables
 dotenv.config();
@@ -30,6 +31,23 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 // Ikkada nuvvu icche prefix '/api/cert' chala important
 app.use('/api/cert', require('./routes/certRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+
+
+// 1. Cron-job.org kosam simple route
+app.get('/ping', (req, res) => {
+    console.log("Ping received at:", new Date().toLocaleTimeString());
+    res.status(200).send('pong');
+});
+
+// 2. Self-ping interval (Every 10 mins)
+setInterval(() => {
+    // Render backend URL ikkada update chey mava
+    const backendUrl = 'https://skilldzire.onrender.com/ping';
+    axios.get(backendUrl)
+        .then(() => console.log('Self-ping: Server is awake!'))
+        .catch(err => console.log('Self-ping failed:', err.message));
+}, 600000); 
+// --- KEEP-ALIVE PING LOGIC END ---
 
 // 5. Default Route - Redirect to Homepage
 app.get('/', (req, res) => {

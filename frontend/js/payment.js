@@ -33,7 +33,7 @@ async function notifyAdmin() {
 
     if (!data) {
         alert("Session expired. Please fill the form again mava!");
-        window.location.href = 'index.html';
+        window.location.href = '/';
         return;
     }
 
@@ -97,7 +97,7 @@ async function processUTRSubmission() {
         const response = await fetch('https://skilldzire.onrender.com/api/cert/request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...userData, utrNumber: utrValue })
+            body: JSON.stringify({userData})
         });
 
         if (response.ok) {

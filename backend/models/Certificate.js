@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const certificateSchema = new mongoose.Schema({
     userName: { type: String, required: true },
     userEmail: { type: String, required: true },
-    branchRoll: { type: String, required: true },
+    branchRoll: { type: String},
     collegeName: { type: String, required: true },
     course: { type: String, required: true },
     certificateId: String,

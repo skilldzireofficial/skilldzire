@@ -1,0 +1,208 @@
+:root {
+    --primary: #ff6600;
+    --black: #000000;
+    --dark-grey: #121212;
+    --input-bg: #1e1e1e;
+    --text-white: #ffffff;
+    --text-dim: #b3b3b3;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: var(--black);
+    color: var(--text-white);
+    line-height: 1.6;
+}
+
+/* Navbar */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    background: rgba(0, 0, 0, 0.9);
+    border-bottom: 1px solid #222;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.logo span { color: var(--primary); }
+
+.nav-links {
+    display: flex;
+    list-style: none;
+}
+
+.nav-links li { margin-left: 20px; }
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-white);
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.nav-links a:hover { color: var(--primary); }
+
+/* Hero Section */
+.hero {
+    height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    background: radial-gradient(circle at center, #1a100a 0%, #000 100%);
+}
+
+.hero-content {
+    text-align: center;
+    max-width: 800px;
+}
+
+.hero-content h1 {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.hero-content h1 span { color: var(--primary); }
+
+.hero-content p {
+    font-size: clamp(1rem, 3vw, 1.2rem);
+    color: var(--text-dim);
+    margin-bottom: 30px;
+}
+
+.btn-primary {
+    padding: 15px 40px;
+    background: var(--primary);
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    background: #ff8533;
+    transform: translateY(-3px);
+}
+
+/* Modal Overlay */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 2000;
+    overflow-y: auto; /* For small screens */
+    padding: 20px;
+}
+
+.modal-content {
+    background: var(--dark-grey);
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 8px;
+    border-top: 4px solid var(--primary);
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 2rem;
+    color: var(--text-dim);
+    cursor: pointer;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Form */
+.input-box { margin-bottom: 15px; }
+
+input, select {
+    width: 100%;
+    padding: 12px 15px;
+    background: var(--input-bg);
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+input:focus, select:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.duration-section {
+    background: #181818;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.date-flex {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.price-tag {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px dashed var(--primary);
+}
+
+.price-tag span {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--primary);
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 600px) {
+    nav { padding: 15px 5%; }
+    .logo { font-size: 1.2rem; }
+    .hero-content h1 { font-size: 2.2rem; }
+    .modal-content { padding: 20px; margin: 10px auto; }
+    .date-flex { flex-direction: column; }
+}

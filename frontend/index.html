@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SkillDzire | Internship Certificates</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Status link ki special styling mava */
+        .status-btn {
+            background-color: #6366f1;
+            color: white !important;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: 0.3s ease;
+        }
+        .status-btn:hover {
+            background-color: #4f46e5;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">Skill<span>Dzire</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="status.html" class="status-btn">Check Status</a></li>
+            <li><a href="verify.html">Verify</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Elevate Your <span>Career</span></h1>
+            <p>Your hard work deserves recognition. Claim your industry-standard internship completion certificate today.</p>
+            <button class="btn-primary" onclick="openModal()">Get Certificate</button>
+        </div>
+    </section>
+
+    <div id="certModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Request Form</h2>
+            <form id="certificateForm">
+                <div class="input-box">
+                    <input type="text" id="userName" placeholder="Full Name (for certificate)" required>
+                </div>
+                <div class="input-box">
+                    <input type="email" id="userEmail" placeholder="Email Address" required>
+                </div>
+                <div class="input-box">
+                    <input type="text" id="collegeName" placeholder="College Name" required>
+                </div>
+                <div class="input-box">
+                    <input type="text" id="branchRoll" placeholder="Branch & Roll Number" required>
+                </div>
+                
+                <div class="input-box">
+                    <select id="course" required>
+                        <option value="" disabled selected>Select Internship Domain</option>
+                        <option value="Full Stack Web Development">Full Stack Web Development</option>
+                        <option value="Data Science & AI">Data Science & AI</option>
+                        <option value="Python Programming">Python Programming</option>
+                        <option value="Automation Testing">Automation Testing</option>
+                    </select>
+                </div>
+
+                <div class="duration-section">
+                    <label>Internship Period:</label>
+                    <div class="date-flex">
+                        <input type="month" id="fromDate" required title="Start Month">
+                        <span>to</span>
+                        <input type="month" id="toDate" required title="End Month">
+                    </div>
+                </div>
+
+                <div class="price-tag">
+                    <p>Processing Fee: <span>₹1</span></p>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit & Proceed</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

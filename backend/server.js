@@ -50,7 +50,7 @@ setInterval(() => {
 // --- KEEP-ALIVE PING LOGIC END ---
 
 // 5. Default Route - Redirect to Homepage
-app.get('/', (req, res) => {
+app.get('/homepage', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 

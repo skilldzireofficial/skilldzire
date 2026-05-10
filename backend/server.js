@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // 2. Database Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/skilldzire')
-    .then(() => console.log('✅ MongoDB Connected successfully mava!'))
+    .then(() => console.log('✅ MongoDB Connected successfully!'))
     .catch((err) => console.error('❌ MongoDB Connection Error:', err));
 
 // 3. Serve Static Files

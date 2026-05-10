@@ -85,7 +85,7 @@ async function processUTRSubmission() {
 
     if (!userData) {
         alert("Session expired. Please fill the form again.");
-        window.location.href = '/';
+        window.location.href = '/homepage';
         return;
     }
 
@@ -97,7 +97,7 @@ async function processUTRSubmission() {
         const response = await fetch('https://skilldzire.onrender.com/api/cert/request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({userData})
+            body: JSON.stringify({ ...userData, utrNumber: utrValue})
         });
 
         if (response.ok) {

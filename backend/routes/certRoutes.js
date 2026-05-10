@@ -77,7 +77,7 @@ router.get('/verify/:id', async (req, res) => {
         const user = await Certificate.findOne({ certificateId: req.params.id });
         
         if (!user) {
-            return res.status(404).json({ message: "Invalid Certificate ID mava!" });
+            return res.status(404).json({ message: "No record Found with this Id" });
         }
 
         // Verification page ki kavalsina details pampali

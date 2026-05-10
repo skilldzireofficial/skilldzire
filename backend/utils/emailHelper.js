@@ -5,8 +5,8 @@ const path = require('path');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER, // skilldzire@gmail.com
-        pass: process.env.EMAIL_PASS  // Nee 16-digit App Password
+        user: process.env.ADMIN_EMAIL, // skilldzire@gmail.com
+        pass: process.env.ADMIN_PASSWORD  // Nee 16-digit App Password
     }
 });
 
@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
  */
 const sendAdminNotification = async (userData) => {
     const mailOptions = {
-        from: `"SkillDzire System" <${process.env.EMAIL_USER}>`,
+        from: `"SkillDzire System" <${process.env.ADMIN_EMAIL}>`,
         to: process.env.ADMIN_EMAIL, // Deenike alert vastundi
         subject: `🔔 New Internship Request: ${userData.userName}`,
         html: `
@@ -46,7 +46,7 @@ const sendAdminNotification = async (userData) => {
  */
 const sendCertificateMail = async (userEmail, pdfPath, userName) => {
     const mailOptions = {
-        from: `"SkillDzire Officials" <${process.env.EMAIL_USER}>`,
+        from: `"SkillDzire Officials" <${process.env.ADMIN_EMAIL}>`,
         to: userEmail,
         subject: `Internship Completion Certificate - ${userName}`,
         html: `

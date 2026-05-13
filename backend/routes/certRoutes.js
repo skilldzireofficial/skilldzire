@@ -32,7 +32,7 @@ router.post('/request', async (req, res) => {
                 <p><b>UTR Number:</b> <span style="color:green; font-weight:bold;">${utrNumber}</span></p>
                 <br>
                 <p>
-                    <a href="https://skilldzire.onrender.com/admin-login" 
+                    <a href="http://localhost:5000/admin-login" 
                        style="padding: 10px 20px; background: #FF6600; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">
                        Verify in Admin Panel
                     </a>
@@ -54,16 +54,16 @@ router.post('/request', async (req, res) => {
 router.get('/status/:email', async (req, res) => {
     try {
         const user = await Certificate.findOne({ userEmail: req.params.email }).sort({ createdAt: -1 });
-        
-        if (!user) {
-            return res.status(404).json({ message: "No Record Found" });
-        }
+        if (!user) return res.status(404).json({ message: "No record Found" });
 
-        res.json({ 
+        res.json({
             status: user.status,
             name: user.userName,
+            userEmail: user.userEmail,
+            collegeName: user.collegeName,
+            branchRoll: user.branchRoll,
             course: user.course,
-            certificateId: user.certificateId || "Not Assigned Yet" // <--- Ee line add chey
+            duration: user.duration // Schema nundi duration field
         });
     } catch (err) {
         res.status(500).json({ message: err.message });

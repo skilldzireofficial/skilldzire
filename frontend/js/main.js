@@ -45,6 +45,7 @@ document.getElementById('certificateForm').addEventListener('submit', function(e
     };
     // Store this data in sessionStorage (Temporary browser memory)
     // Deenivalla payment page lo manam ee data ni vadochu
+    localStorage.setItem('userEmail', userEmail);
     sessionStorage.setItem('pendingCertData', JSON.stringify(formData));
 
     // Show a small loading state on button
@@ -54,6 +55,6 @@ document.getElementById('certificateForm').addEventListener('submit', function(e
 
     // Move to Payment Page
     setTimeout(() => {
-        window.location.href = 'payment.html';
+        window.location.href = '/paymentpage';
     }, 1000);
 });

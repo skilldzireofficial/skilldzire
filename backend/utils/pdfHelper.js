@@ -39,7 +39,7 @@ const generateCertificate = async (userData) => {
             // 4. --- QR CODE (Center Placement) ---
             // Nuvvu annattu QR Code center lo ravali ante X position ni sagam lo set cheyali
             const certID = `SD-${userData._id.toString().slice(-6).toUpperCase()}`;
-            const verifyURL = `http://localhost:5000/verify.html?id=${certID}`;
+            const verifyURL = `https://skilldzire.onrender.com/verify.html?id=${certID}`;
             const qrCodeData = await QRCode.toDataURL(verifyURL);
             
             // X=380 (Center of A4 Landscape), Y=440 (Bottom section)

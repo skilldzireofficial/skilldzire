@@ -2,22 +2,22 @@ const express = require('express');
 const router = express.Router();
 const Certificate = require('../models/Certificate');
 const { sendAdminNotification } = require('../utils/emailHelper');
-
-// 1. User Form Submit chesinapudu trigger avtundi
 const nodemailer = require('nodemailer');
 
-// User details save ayyaka neeku alert vachelaga
-
-// 1. Updated Request Route with UTR and English Email Template
+// 1. User Form Submit (Request Route)
 router.post('/request', async (req, res) => {
     try {
         const { userName, userEmail, course, utrNumber } = req.body;
+        // Kotha request save chestunnam
         const newRequest = new Certificate({ ...req.body, status: 'Pending' });
         await newRequest.save();
 
         let transporter = nodemailer.createTransport({
             service: 'gmail',
-            auth: { user: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD}
+            auth: { 
+                user: process.env.ADMIN_EMAIL, 
+                pass: process.env.ADMIN_PASSWORD 
+            }
         });
 
         const adminMailOptions = {
@@ -46,11 +46,7 @@ router.post('/request', async (req, res) => {
     }
 });
 
-// 2. Protected Admin Route (Add the middleware here)
-
-
-// 2. verifying user
-// 2. verifying user status (Updated with Certificate ID)
+// 2. User Status Check (Email tho verify cheyadaniki)
 router.get('/status/:email', async (req, res) => {
     try {
         const user = await Certificate.findOne({ userEmail: req.params.email }).sort({ createdAt: -1 });
@@ -63,36 +59,39 @@ router.get('/status/:email', async (req, res) => {
             collegeName: user.collegeName,
             branchRoll: user.branchRoll,
             course: user.course,
-            duration: user.duration // Schema nundi duration field
+            duration: user.duration 
         });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-// --- NEW: Verify by Certificate ID (For QR & Manual Search) ---
+// 3. MAIN VERIFICATION: Certificate ID tho vethukuthunnam
+// QR code scan chesina, verify.html lo ID enter chesina ide trigger avtundi
 router.get('/verify/:id', async (req, res) => {
     try {
-        // Database lo certificateId field tho search chestunnam
-        const user = await Certificate.findOne({ certificateId: req.params.id });
-        
-        if (!user) {
-            return res.status(404).json({ message: "No record Found with this Id" });
+        // Database lo certificateId field check chestundi
+        const cert = await Certificate.findOne({ certificateId: req.params.id });
+
+        if (!cert) {
+            // Mava, record lekapothe 404 isthunnam
+            return res.status(404).json({ success: false, message: "Invalid ID, records not found!" });
         }
 
-        // Verification page ki kavalsina details pampali
         res.json({
-            userName: user.userName,
-            course: user.course,
-            collegeName: user.collegeName,
-            status: user.status
+            success: true,
+            userName: cert.userName,
+            course: cert.course,
+            collegeName: cert.collegeName,
+            status: cert.status,
+            issuedAt: cert.createdAt
         });
     } catch (err) {
-        res.status(500).json({ message: "Server Error during verification" });
+        res.status(500).json({ success: false, message: "Server Error mava!" });
     }
 });
 
-// Middleware: Request header lo key unteనే allowed
+// 4. Middleware: Admin Authentication
 const authAdmin = (req, res, next) => {
     const key = req.headers['x-admin-key'];
     if (key === process.env.ADMIN_SECRET_KEY) {
@@ -102,6 +101,7 @@ const authAdmin = (req, res, next) => {
     }
 };
 
+// Admin pending requests fetch cheyadaniki
 router.get('/admin/pending', authAdmin, async (req, res) => {
     try {
         const requests = await Certificate.find({ status: 'Pending' });
@@ -111,5 +111,5 @@ router.get('/admin/pending', authAdmin, async (req, res) => {
     }
 });
 
-
-module.exports = {router, authAdmin};
+// Mava, exporting correctly now
+module.exports = { router, authAdmin };

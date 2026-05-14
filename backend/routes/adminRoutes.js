@@ -3,8 +3,8 @@ const router = express.Router();
 const Certificate = require('../models/Certificate');
 const { sendCertificateMail, sendAdminNotification } = require('../utils/emailHelper');
 const { generateCertificate } = require('../utils/pdfHelper');
-const {authAdmin} = require('./certRoutes');
-const path = require('path')
+const { authAdmin } = require('./certRoutes');
+const path = require('path');
 
 // 1. Get all pending requests for admin panel
 router.get('/pending', authAdmin, async (req, res) => {
@@ -22,23 +22,30 @@ router.post('/approve/:id', authAdmin, async (req, res) => {
         const user = await Certificate.findById(req.params.id);
         if (!user) return res.status(404).json({ message: "User not Found!" });
 
-        // Update status in DB
+        // --- MAVA IKKADA FIX CHEYYALI ---
+        // Step 1: Custom Certificate ID generate cheyali
+        const generatedCertId = `SD-${user._id.toString().slice(-6).toUpperCase()}`;
+        
+        // Step 2: Database lo certificateId field update chesi save cheyali
+        user.certificateId = generatedCertId; 
         user.status = 'Approved';
         await user.save();
 
-        // Step A: Generate PDF
-        // Step A: Generate PDF (Idi filename isthundi)
+        // Step 3: PDF generate chey (Idi generatedCertId ni kooda vadukuntundi)
         const pdfFileName = await generateCertificate(user);
         
-        // Step B: Email pampadaniki full path create chey mava
+        // Step 4: Email pampadaniki path setup
         const fullPdfPath = path.join(__dirname, '../assets', pdfFileName);
 
-        // Step C: User ki mail pampu
+        // Step 5: User ki mail pampu
         await sendCertificateMail(user.userEmail, fullPdfPath, user.userName);
 
-        res.json({ success: true, message: "Approved mava! PDF sent." });
+        res.json({ 
+            success: true, 
+            message: "Approved mava! ID: " + generatedCertId + " saved and PDF sent." 
+        });
     } catch (err) {
-        console.error(err);
+        console.error("Approve Error:", err);
         res.status(500).json({ message: "Approval process failed!" });
     }
 });
@@ -58,15 +65,13 @@ router.post('/submit-payment', async (req, res) => {
     try {
         const { userId, utrNumber } = req.body;
         
-        // Database lo update cheyali
         const user = await Certificate.findById(userId);
         if (!user) return res.status(404).json({ message: "User not Found!" });
 
         user.utrNumber = utrNumber;
-        user.paymentStatus = 'Paid';
+        user.status = 'Payment Verified'; // Optional: Status update
         await user.save();
 
-        // Admin (Neeku) Alert Email
         await sendAdminNotification({
             userName: user.userName,
             userEmail: user.userEmail,

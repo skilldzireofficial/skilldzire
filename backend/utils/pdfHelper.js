@@ -20,10 +20,13 @@ const generateCertificate = async (userData) => {
             fs.mkdirSync(assetsDir, { recursive: true });
         }
 
-        const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
-        const stream = fs.createWriteStream(filePath);
+        // Mava ikkada 'let' vaadi stream ni bayata declare chesthe catch block lo access untundi
+        let stream;
 
         try {
+            const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
+            stream = fs.createWriteStream(filePath);
+
             doc.pipe(stream);
 
             // 2. Background Template
@@ -72,8 +75,10 @@ const generateCertificate = async (userData) => {
 
         } catch (error) {
             console.error("PDF Logic Error:", error);
-            // Stream close cheyali error vasthe
-            stream.end();
+            // Ikkada check chesi stream close chesthe ReferenceError raadu
+            if (stream) {
+                stream.end();
+            }
             reject(error);
         }
     });

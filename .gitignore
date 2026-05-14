@@ -34,5 +34,5 @@ desktop.ini
 
 # Uploads & Certificates (Users upload chese files GitHub ki vellakudadu)
 frontend/uploads/
-certificates/
-*.pdf 
+backend/assets/*.pdf
+!backend/assets/template.png

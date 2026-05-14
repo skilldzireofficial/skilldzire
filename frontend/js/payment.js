@@ -38,7 +38,7 @@ async function notifyAdmin() {
     }
 
     try {
-        const response = await fetch('https://skilldzire.onrender.com/api/cert/request', {
+        const response = await fetch('http://localhost:5000/api/cert/request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({...data, utrNumber: utrValue})
@@ -94,7 +94,7 @@ async function processUTRSubmission() {
 
     try {
         // Send UTR + User Details to the backend request route
-        const response = await fetch('https://skilldzire.onrender.com/api/cert/request', {
+        const response = await fetch('http://localhost:5000/api/cert/request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...userData, utrNumber: utrValue})

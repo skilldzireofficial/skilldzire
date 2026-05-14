@@ -3,9 +3,11 @@ const router = express.Router();
 const Certificate = require('../models/Certificate');
 const { sendCertificateMail, sendAdminNotification } = require('../utils/emailHelper');
 const { generateCertificate } = require('../utils/pdfHelper');
+const {authAdmin} = require('./certRoutes');
+const path = require('path')
 
 // 1. Get all pending requests for admin panel
-router.get('/pending', async (req, res) => {
+router.get('/pending', authAdmin, async (req, res) => {
     try {
         const pending = await Certificate.find({ status: 'Pending' }).sort({ createdAt: -1 });
         res.json(pending);
@@ -15,7 +17,7 @@ router.get('/pending', async (req, res) => {
 });
 
 // 2. Approve and Send Certificate
-router.post('/approve/:id', async (req, res) => {
+router.post('/approve/:id', authAdmin, async (req, res) => {
     try {
         const user = await Certificate.findById(req.params.id);
         if (!user) return res.status(404).json({ message: "User not Found!" });
@@ -25,12 +27,16 @@ router.post('/approve/:id', async (req, res) => {
         await user.save();
 
         // Step A: Generate PDF
-        const pdfPath = await generateCertificate(user);
+        // Step A: Generate PDF (Idi filename isthundi)
+        const pdfFileName = await generateCertificate(user);
+        
+        // Step B: Email pampadaniki full path create chey mava
+        const fullPdfPath = path.join(__dirname, '../assets', pdfFileName);
 
-        // Step B: Send to User from skilldzire@gmail.com
-        await sendCertificateMail(user.userEmail, pdfPath, user.userName);
+        // Step C: User ki mail pampu
+        await sendCertificateMail(user.userEmail, fullPdfPath, user.userName);
 
-        res.json({ success: true, message: "Approved!" });
+        res.json({ success: true, message: "Approved mava! PDF sent." });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Approval process failed!" });

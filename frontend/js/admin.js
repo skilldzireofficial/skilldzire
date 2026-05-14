@@ -1,41 +1,56 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Session check - login kakunda వస్తే వెనక్కి పంపాలి
     const token = sessionStorage.getItem('admin_token');
     
     if (!token || token !== "skilldzire@4404") {
-        window.location.href = "/admin-login"; // Login lekapothe back pampichey
+        window.location.href = "/admin-login";
         return;
     }
     fetchRequests();
 });
 
-// Logout function (Optional)
+// Logout function
 function logout() {
-    localStorage.removeItem('admin_token');
+    sessionStorage.removeItem('admin_token'); // clear session
     window.location.href = "/admin-login";
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    fetchRequests();
-});
-
 // Custom Modal Control
 function showStatusModal(title, message) {
-    document.getElementById('modalTitle').innerText = title;
-    document.getElementById('modalMessage').innerText = message;
-    document.getElementById('statusModal').style.display = 'block';
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modal = document.getElementById('statusModal');
+    
+    if (modalTitle && modalMessage && modal) {
+        modalTitle.innerText = title;
+        modalMessage.innerText = message;
+        modal.style.display = 'block';
+    }
 }
 
 function closeStatusModal() {
-    document.getElementById('statusModal').style.display = 'none';
+    const modal = document.getElementById('statusModal');
+    if (modal) modal.style.display = 'none';
 }
 
-// 1. Load data from Backend
+// 1. Load data from Backend (GET Request with Headers)
 async function fetchRequests() {
     const tbody = document.getElementById('adminTableBody');
+    if (!tbody) return;
+
     tbody.innerHTML = '<tr><td colspan="6" class="loader">Fetching records...</td></tr>';
 
     try {
-        const response = await fetch('https://skilldzire.onrender.com/api/admin/pending');
+        const response = await fetch('http://localhost:5000/api/admin/pending', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-admin-key': 'skilldzire@4404' // Nee .env key kachithamga undali
+            }
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
         const data = await response.json();
 
         if (data.length === 0) {
@@ -63,51 +78,65 @@ async function fetchRequests() {
         });
 
     } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="6" class="loader" style="color:red;">Failed to connect to server.</td></tr>';
+        console.error("Fetch error:", err);
+        tbody.innerHTML = '<tr><td colspan="6" class="loader" style="color:red;">Failed to connect to server. Check Console!</td></tr>';
     }
 }
 
-// 2. Approve Request
-async function approveRequest(id) {
+// 2. Approve Request (POST Request with Headers)
+// admin.js - Around Line 65
+async function approveRequest(id, event) { // Ikkada 'event' add cheyali mava
     try {
-        const btn = event.target;
+        const btn = event.target; // Ippudu idi crash avvadu
+        const originalText = btn.innerText;
+        
         btn.innerText = "Generating PDF...";
         btn.disabled = true;
 
-        // Backend ki request pamputhunnam
-        const response = await fetch(`https://skilldzire.onrender.com/api/admin/approve/${id}`, {
-            method: 'POST'
+        const response = await fetch(`http://localhost:5000/api/admin/approve/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-admin-key': 'skilldzire@4404' // Auth key kachithamga undali
+            }
         });
+        
         const result = await response.json();
 
         if(result.success) {
-            showStatusModal("Success ✅", "Certificate ID Created & PDF Sent to User Email!");
+            showStatusModal("Success ✅", "Certificate ID Created & PDF Sent!");
             fetchRequests();
         } else {
             showStatusModal("Error", result.message);
-            btn.innerText = "Approve";
+            btn.innerText = originalText;
             btn.disabled = false;
         }
     } catch (err) {
+        console.error(err);
         showStatusModal("Server Error", "Connection failed mava!");
     }
 }
-// 3. Delete Request
+
+// 3. Delete Request (DELETE Request with Headers if protected)
 async function deleteRequest(id) {
-    if(!confirm("Are you sure you want to delete this record?")) return;
+    if (!confirm("Are you sure you want to delete this record?")) return;
 
     try {
-        const response = await fetch(`https://skilldzire.onrender.com/api/admin/reject/${id}`, {
-            method: 'DELETE'
+        const response = await fetch(`http://localhost:5000/api/admin/reject/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'x-admin-key': 'skilldzire@4404'
+            }
         });
         
-        if(response.ok) {
-            showStatusModal("Deleted", "The request record has been removed successfully.");
+        if (response.ok) {
+            showStatusModal("Deleted", "The request record has been removed.");
             fetchRequests();
         } else {
-            showStatusModal("Error", "Could not delete the record from the database.");
+            showStatusModal("Error", "Could not delete the record.");
         }
     } catch (err) {
+        console.error("Delete error:", err);
         showStatusModal("Server Error", "Failed to reach the server.");
     }
 }

@@ -1,60 +1,79 @@
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
+const QRCode = require('qrcode'); // Mava idi install chey (npm i qrcode)
 
 /**
  * Function: Generate Certificate PDF
- * Nee backend/assets/template.png paina details print chestundi
+ * Backend assets folder lo template.png paina details print chestundi
  */
-const QRCode = require('qrcode'); // Mava idi install chey (npm i qrcode)
-
 const generateCertificate = async (userData) => {
     return new Promise(async (resolve, reject) => {
-        try {
-            const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
-            const fileName = `Cert_${userData._id}.pdf`;
-            const filePath = path.join(__dirname, '../assets', fileName);
-            const templatePath = path.join(__dirname, '../assets/template.png');
+        // 1. Setup Paths
+        const assetsDir = path.join(__dirname, '../assets');
+        const fileName = `Cert_${userData._id}.pdf`;
+        const filePath = path.join(assetsDir, fileName);
+        const templatePath = path.join(assetsDir, 'template.png');
 
-            const stream = fs.createWriteStream(filePath);
+        // Assets folder lekapothe create chey mava (ENOENT error rakunda)
+        if (!fs.existsSync(assetsDir)) {
+            fs.mkdirSync(assetsDir, { recursive: true });
+        }
+
+        const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
+        const stream = fs.createWriteStream(filePath);
+
+        try {
             doc.pipe(stream);
 
-            // 1. Template Image (Base)
+            // 2. Background Template
             if (fs.existsSync(templatePath)) {
-                doc.image(templatePath, 0, 0, { width: 841.89, height: 595.28 });
+                doc.image(templatePath, 0, 0, { width: 842, height: 595 });
+            } else {
+                console.error("Mava, assets folder lo template.png ledu!");
             }
 
-            // 2. --- USER NAME (Bold & Center) ---
-            // Font size 38 petti Helvetica-Bold vadutunnam mava
+            // 3. USER NAME (Bold & Center)
             doc.fillColor('#1a1a1a')
                .fontSize(38)
                .font('Helvetica-Bold')
                .text(userData.userName.toUpperCase(), 0, 275, { align: 'center' });
 
-            // 3. --- COURSE DETAILS (Bold) ---
+            // 4. COURSE DETAILS
             doc.fontSize(22)
                .font('Helvetica-Bold')
                .text(userData.course, 0, 355, { align: 'center' });
 
-            // 4. --- QR CODE (Center Placement) ---
-            // Nuvvu annattu QR Code center lo ravali ante X position ni sagam lo set cheyali
+            // 5. QR CODE Logic
             const certID = `SD-${userData._id.toString().slice(-6).toUpperCase()}`;
-            const verifyURL = `https://skilldzire.onrender.com/verify.html?id=${certID}`;
+            const verifyURL = `http://localhost:5000/verification?id=${certID}`;
             const qrCodeData = await QRCode.toDataURL(verifyURL);
             
-            // X=380 (Center of A4 Landscape), Y=440 (Bottom section)
+            // QR Code placement
             doc.image(qrCodeData, 380, 440, { width: 85, height: 85 });
 
-            // 5. --- CERTIFICATE ID (Bold & Left) ---
-            // "Certificate ID:" label pakkana exact ga ravali
+            // 6. CERTIFICATE ID Print
             doc.fontSize(12)
                .font('Helvetica-Bold')
-               .fillColor('#d63384') // Highlight color
+               .fillColor('#d63384')
                .text(certID, 185, 518); 
 
             doc.end();
-            stream.on('finish', () => resolve(fileName));
+
+            // Success handling
+            stream.on('finish', () => {
+                resolve(fileName);
+            });
+
+            // Stream Error handling
+            stream.on('error', (err) => {
+                reject(err);
+            });
+
         } catch (error) {
+            console.error("PDF Logic Error:", error);
+            // Stream close cheyali error vasthe
+            stream.end();
             reject(error);
         }
     });

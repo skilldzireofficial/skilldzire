@@ -22,7 +22,7 @@ async function verifyCertificate() {
 
     try {
         // Backend kotha route ki request veltundi mava
-        const response = await fetch(`https://skilldzire.onrender.com/api/cert/verify/${certID}`);
+        const response = await fetch(`http://localhost:5000/api/cert/verify/${certID}`);
         const data = await response.json();
 
         if (response.ok) {

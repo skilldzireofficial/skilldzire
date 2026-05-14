@@ -44,7 +44,7 @@ app.get('/ping', (req, res) => {
 // 2. Self-ping interval (Every 10 mins)
 setInterval(() => {
     // Render backend URL ikkada update chey mava
-    const backendUrl = 'http://localhost:5000/ping';
+    const backendUrl = 'https://skilldzire.onrender.com/ping';
     axios.get(backendUrl)
         .then(() => console.log('Self-ping: Server is awake!'))
         .catch(err => console.log('Self-ping failed:', err.message));

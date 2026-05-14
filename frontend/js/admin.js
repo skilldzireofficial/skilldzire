@@ -41,7 +41,7 @@ async function fetchRequests() {
     tbody.innerHTML = '<tr><td colspan="6" class="loader">Fetching records...</td></tr>';
 
     try {
-        const response = await fetch('http://localhost:5000/api/admin/pending', {
+        const response = await fetch('https://skilldzire.onrender.com/api/admin/pending', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ async function approveRequest(id, event) { // Ikkada 'event' add cheyali mava
         btn.innerText = "Generating PDF...";
         btn.disabled = true;
 
-        const response = await fetch(`http://localhost:5000/api/admin/approve/${id}`, {
+        const response = await fetch(`https://skilldzire.onrender.com/api/admin/approve/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ async function deleteRequest(id) {
     if (!confirm("Are you sure you want to delete this record?")) return;
 
     try {
-        const response = await fetch(`http://localhost:5000/api/admin/reject/${id}`, {
+        const response = await fetch(`https://skilldzire.onrender.com/api/admin/reject/${id}`, {
             method: 'DELETE',
             headers: {
                 'x-admin-key': 'skilldzire@4404'

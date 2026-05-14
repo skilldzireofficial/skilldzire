@@ -49,7 +49,7 @@ const generateCertificate = async (userData) => {
 
             // 5. QR CODE Logic
             const certID = `SD-${userData._id.toString().slice(-6).toUpperCase()}`;
-            const verifyURL = `http://localhost:5000/verification?id=${certID}`;
+            const verifyURL = `https://skilldzire.onrender.com/verification?id=${certID}`;
             const qrCodeData = await QRCode.toDataURL(verifyURL);
             
             // QR Code placement

@@ -1,83 +1,53 @@
 let selectedApp = 'phonepe';
-const upiId = "6305358073@ybl"; // Nee UPI ID mava
+const upiId = "6305358073@ybl"; 
 const amount = "1";
 const payeeName = "SkillDzire";
 
+// 1. Payment Method Selection
 function selectMethod(element, method) {
     document.querySelectorAll('.upi-item').forEach(item => item.classList.remove('selected'));
     element.classList.add('selected');
     selectedApp = method;
 }
 
-
+// 2. Initial Payment Trigger
 function handlePayment() {
     const note = "Internship Certificate Fee";
     const upiUri = `upi://pay?pa=${upiId}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
 
-    // Check if Mobile or Laptop
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     if (isMobile) {
-        // Mobile: App trigger chesthunnam
         window.location.href = upiUri;
     } else {
-        // Laptop: QR Code modal chupisthunnam
         const qrImg = document.getElementById('qrImg');
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
-        document.getElementById('qrModal').style.display = 'flex';
-    }
-}
-
-async function notifyAdmin() {
-    const data = JSON.parse(sessionStorage.getItem('pendingCertData'));
-
-    if (!data) {
-        alert("Session expired. Please fill the form again mava!");
-        window.location.href = '/';
-        return;
-    }
-
-    try {
-        const response = await fetch('https://skilldzire.onrender.com/api/cert/request', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({...data, utrNumber: utrValue})
-        });
-
-        const result = await response.json();
-        if (result.success) {
-            document.getElementById('successModal').style.display = 'flex';
-            sessionStorage.removeItem('pendingCertData');
+        if (qrImg) {
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
+            document.getElementById('qrModal').style.display = 'flex';
         }
-    } catch (err) {
-        alert("Server Down! Check if backend is running.");
     }
 }
 
+// 3. Modal Control Functions
 function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = 'none';
 }
 
-// Function to open the UTR modal
 function openUTRModal() {
     document.getElementById('utrModal').style.display = 'flex';
 }
 
-// Function to close the UTR modal
-function closeUTRModal() {
-    document.getElementById('utrModal').style.display = 'none';
-}
-
-
+// 4. MAIN FUNCTION: UTR Submission & Success Modal
 async function processUTRSubmission() {
     const utrField = document.getElementById('utrNumber');
     const confirmBtn = document.getElementById('confirmBtn');
     const utrValue = utrField.value.trim();
     
-    // Retrieve the form data stored in sessionStorage from main.js
+    // sessionStorage నుండి డేటా తెచ్చుకుంటున్నాం
     const userData = JSON.parse(sessionStorage.getItem('pendingCertData')); 
 
-    // Validation for 12-digit UTR
+    // UTR Validation
     if (!/^\d{12}$/.test(utrValue)) {
         alert("Please enter a valid 12-digit UTR number.");
         return;
@@ -93,25 +63,36 @@ async function processUTRSubmission() {
     confirmBtn.innerText = "Submitting...";
 
     try {
-        // Send UTR + User Details to the backend request route
+        // FIX: ఇక్కడ నీ లైవ్ రెండర్ లింక్ కరెక్ట్ గా ఇచ్చాను మవ
         const response = await fetch('https://skilldzire.onrender.com/api/cert/request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...userData, utrNumber: utrValue})
+            body: JSON.stringify({ ...userData, utrNumber: utrValue })
         });
 
-        if (response.ok) {
-            document.getElementById('utrModal').style.display = 'none';
-            document.getElementById('qrModal').style.display = 'none';
-            document.getElementById('successModal').style.display = 'flex';
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            // పాత మోడల్స్ క్లోజ్ చేసి సక్సెస్ మోడల్ ఓపెన్ చేస్తున్నాం
+            if (document.getElementById('utrModal')) document.getElementById('utrModal').style.display = 'none';
+            if (document.getElementById('qrModal')) document.getElementById('qrModal').style.display = 'none';
+            
+            const successModal = document.getElementById('successModal');
+            if (successModal) {
+                successModal.style.display = 'flex'; // ఇదే నీ చెక్ స్టేటస్ పాపప్ మవ
+            } else {
+                alert("Submission Successful! (Success Modal missing in HTML)");
+            }
+            
             sessionStorage.removeItem('pendingCertData');
         } else {
-            alert("Submission failed. Please try again.");
+            alert("Submission failed: " + (result.message || "Please try again."));
             confirmBtn.disabled = false;
             confirmBtn.innerText = "Verify Submission";
         }
     } catch (error) {
-        alert("Server error. Please check your connection.");
+        console.error("Submission Error:", error);
+        alert("Server error. Please check your internet connection.");
         confirmBtn.disabled = false;
         confirmBtn.innerText = "Verify Submission";
     }

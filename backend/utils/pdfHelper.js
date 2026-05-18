@@ -32,21 +32,21 @@ const generateCertificate = async (userData) => {
             // =========================================================
 
             // --- STEP 1: User Name (Perfect row spacing on line 1) ---
-            const nameStr = userData.userName || "GUNUKULA RAKESH";
+            const nameStr = userData.userName || "N/A";
             doc.fillColor('#1a1a1a')
                .fontSize(20)
                .font('Helvetica-Bold')
                .text(nameStr.toUpperCase(), 0, 185, { align: 'center', width: 842 });
 
             // --- STEP 2: Enrolled in the [Branch & Roll No] ---
-            const branchText = `${userData.branch || "CSE Data Science"} - ${userData.rollNo || "23F05A4404"}`;
+            const branchText = `${userData.branch || "N/A"} - ${userData.rollNo || "N/A"}`;
             doc.fontSize(13)
                .font('Helvetica-Bold')
                .fillColor('#2d3748')
                .text(branchText, 305, 230, { width: 450, align: 'left' });
 
             // --- STEP 3: From College [College Name] ---
-            const collegeName = userData.collegeName || "St. Ann's College of Engineering & Technology";
+            const collegeName = userData.collegeName || "N/A";
             doc.fontSize(12)
                .font('Helvetica-Bold')
                .fillColor('#2d3748')
@@ -59,15 +59,15 @@ const generateCertificate = async (userData) => {
                .text("JNTUK, Kakinada", 285, 281, { width: 400, align: 'left' });
 
             // --- STEP 5: Domain Name (Below Long-term Internship titled) ---
-            const domainName = userData.course || "Automation Testing"; 
+            const domainName = userData.course || "N/A"; 
             doc.fontSize(16)
                .font('Helvetica-Bold')
                .fillColor('#1a1a1a')
                .text(domainName, 0, 335, { align: 'center', width: 842 });
 
             // --- STEP 6: Internship Duration (Under SkillDzire from _________ to _________) ---
-            const fromDate = userData.internshipFrom || "15-Mar-2026";
-            const toDate = userData.internshipTo || "15-May-2026";
+            const fromDate = userData.internshipFrom;
+            const toDate = userData.internshipTo;
             
             doc.fontSize(12).font('Helvetica-Bold').fillColor('#2d3748');
             doc.text(fromDate, 325, 386, { width: 110, align: 'center' });
@@ -75,7 +75,7 @@ const generateCertificate = async (userData) => {
 
             // --- STEP 7: Certificate ID (Next to 'Certificate ID: SDST-') ---
             const generatedIdTail = userData.certificateId || userData._id.toString().slice(-6).toUpperCase();
-            const certID = `SDST-${generatedIdTail}`;
+            const certID = `${generatedIdTail}`;
             
             doc.fontSize(11)
                .font('Helvetica-Bold')

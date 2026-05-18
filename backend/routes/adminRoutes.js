@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Certificate = require('../models/Certificate');
-const { sendCertificateMail } = require('../utils/emailHelper');
+const { sendCertificateMail, sendAdminNotification } = require('../utils/emailHelper');
 const { generateCertificate } = require('../utils/pdfHelper');
 const { authAdmin } = require('./certRoutes'); 
 const path = require('path');

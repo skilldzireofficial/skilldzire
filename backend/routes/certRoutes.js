@@ -1,70 +1,43 @@
 const express = require('express');
 const router = express.Router();
 const Certificate = require('../models/Certificate');
-const { sendAdminNotification } = require('../utils/emailHelper');
-const nodemailer = require('nodemailer');
+const path = require('path');
 
-// 1. User Form Submit (Request Route)
+// FIXED MAVA: Import sendAdminNotification correctly from centralized emailHelper
+const { sendAdminNotification } = require('../utils/emailHelper');
+
+// 1. User Form Submit (Request Route) - FIXED CRASH PIPELINE MAVA
 router.post('/request', async (req, res) => {
     try {
         const { userName, userEmail, course, utrNumber } = req.body;
-        // Kotha request save chestunnam
+        
+        // Step 1: Request data ni MongoDB collections loki save chestunnam
         const newRequest = new Certificate({ ...req.body, status: 'Pending' });
         await newRequest.save();
+        console.log("✅ Data saved to MongoDB successfully mava!");
 
-        let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: { 
-                user: process.env.ADMIN_EMAIL, 
-                pass: process.env.ADMIN_PASSWORD 
-            }
+        // Step 2: SAFETY SHIELD PIPELINE MAVA
+        // Mail failure valla frontend freeze avvakudadhu kabatti, dhanni separate try-catch block lo pettanu
+        try {
+            console.log("🔄 Initiating admin SMTP alert notification channel...");
+            await sendAdminNotification(newRequest); 
+            console.log("✅ Admin notification transmitted successfully!");
+        } catch (mailError) {
+            // Mail fail ayina console lo print chesi bypass chesthadhi, server running thread freeze avvadhu!
+            console.error("⚠️ Background SMTP Warning: Notification delayed, but DB data saved safe:", mailError.message);
+        }
+
+        // Step 3: Frontend ki instant response code release chesthunnam
+        return res.status(201).json({ 
+            success: true, 
+            message: "Submission success! Triggering status popup modal." 
         });
 
-        const adminMailOptions = {
-            from: process.env.ADMIN_EMAIL,
-            to: process.env.ADMIN_EMAIL, 
-            subject: `Payment Alert: ${userName}`,
-            html: `
-                <h3>New Certificate Request</h3>
-                <p><b>Name:</b> ${userName}</p>
-                <p><b>Email:</b> ${userEmail}</p>
-                <p><b>Course:</b> ${course}</p>
-                <p><b>UTR Number:</b> <span style="color:green; font-weight:bold;">${utrNumber}</span></p>
-                <br>
-                <p>
-                    <a href="https://skilldzire.onrender.com/admin-login" 
-                       style="padding: 10px 20px; background: #FF6600; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                       Verify in Admin Panel
-                    </a>
-                </p>`
-        };
-
-        await transporter.sendMail(adminMailOptions);
-        res.status(201).json({ success: true });
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+        console.error("❌ Critical Database Request Pipeline Error:", err.message);
+        return res.status(500).json({ success: false, message: "Internal Server Error: " + err.message });
     }
 });
-
-
-// certRoutes.js lo unna post('/request') ni ila marchu mava
-// router.post('/request', async (req, res) => {
-//     try {
-//         const { userName, userEmail, course, utrNumber } = req.body;
-//         const newRequest = new Certificate({ ...req.body, status: 'Pending' });
-//         await newRequest.save();
-
-//         // emailHelper lo manam set chesina 'sendAdminNotification' ni vaadali
-//         // Ikkada manual nodemailer setup ni teesesi idi pettu
-//         const { sendAdminNotification } = require('../utils/emailHelper');
-//         await sendAdminNotification(newRequest); 
-
-//         res.status(201).json({ success: true });
-//     } catch (err) {
-//         console.error("Mava error ikkada: ", err.message);
-//         res.status(500).json({ success: false, message: err.message });
-//     }
-// });
 
 // 2. User Status Check (Email tho verify cheyadaniki)
 router.get('/status/:email', async (req, res) => {
@@ -90,11 +63,9 @@ router.get('/status/:email', async (req, res) => {
 // QR code scan chesina, verify.html lo ID enter chesina ide trigger avtundi
 router.get('/verify/:id', async (req, res) => {
     try {
-        // Database lo certificateId field check chestundi
         const cert = await Certificate.findOne({ certificateId: req.params.id });
 
         if (!cert) {
-            // Mava, record lekapothe 404 isthunnam
             return res.status(404).json({ success: false, message: "Invalid ID, records not found!" });
         }
 
@@ -131,5 +102,5 @@ router.get('/admin/pending', authAdmin, async (req, res) => {
     }
 });
 
-// Mava, exporting correctly now
+// Export elements properly
 module.exports = { router, authAdmin };

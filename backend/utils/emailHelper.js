@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 // Transporter Setup - FORCING IPV4 SYSTEM TO FIX ENETUNREACH ON RENDER
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
+    port: 587,
     secure: true, // Port 465 SSL structural tunnel
     // FIXED MAVA: Forcing Node internal dns engine resolver to only bind clean IPv4 tunnels
     connectionTimeout: 20000,
@@ -15,7 +15,8 @@ const transporter = nodemailer.createTransport({
         pass: process.env.ADMIN_PASSWORD  // REMOVE ALL SPACES INSIDE RENDER SETTINGS PANEL ENGINE MAVA!
     },
     tls: {
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        ciphers: 'SSLv3'
     }
 });
 

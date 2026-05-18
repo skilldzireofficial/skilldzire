@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Certificate = require('../models/Certificate');
-const { sendCertificateMail, sendAdminNotification } = require('../utils/emailHelper');
+const { sendCertificateMail } = require('../utils/emailHelper');
 const { generateCertificate } = require('../utils/pdfHelper');
 const { authAdmin } = require('./certRoutes'); 
-const path = require('path');
 
 // 1. Get all pending requests
 router.get('/pending', authAdmin, async (req, res) => {
@@ -16,23 +15,27 @@ router.get('/pending', authAdmin, async (req, res) => {
     }
 });
 
-// 2. Approve and Send Certificate
+// 2. Approve and Send Certificate - FULL FIXED HANDSHAKE MAVA
 router.post('/approve/:id', authAdmin, async (req, res) => {
     try {
         const user = await Certificate.findById(req.params.id);
         if (!user) return res.status(404).json({ message: "User not Found!" });
 
-        // Step 1: Certificate ID create chesi DB update cheyali
         const generatedCertId = `SD-${user._id.toString().slice(-6).toUpperCase()}`;
         user.certificateId = generatedCertId; 
         user.status = 'Approved';
         await user.save();
 
-        // Step 2: PDF generate ayye varaku wait cheyali (Wait for full filePath)
+        // PDF Generation
         const fullPdfPath = await generateCertificate(user);
 
-        // Step 3: Mail pampali
-        await sendCertificateMail(user.userEmail, fullPdfPath, user.userName);
+        // Safe user mail trigger
+        try {
+            await sendCertificateMail(user.userEmail, fullPdfPath, user.userName);
+            console.log("✅ User certificate mail sent over IPv4 channel!");
+        } catch (mailErr) {
+            console.error("⚠️ User certificate email transmission slow:", mailErr.message);
+        }
 
         res.json({ 
             success: true, 

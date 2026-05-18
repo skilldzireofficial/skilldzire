@@ -1,45 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const Certificate = require('../models/Certificate');
-const path = require('path');
-
-// FIXED MAVA: Import sendAdminNotification correctly from centralized emailHelper
 const { sendAdminNotification } = require('../utils/emailHelper');
 
-// 1. User Form Submit (Request Route) - FIXED CRASH PIPELINE MAVA
+// 1. User Form Submit (Request Route)
 router.post('/request', async (req, res) => {
     try {
         const { userName, userEmail, course, utrNumber } = req.body;
         
-        // Step 1: Request data ni MongoDB collections loki save chestunnam
+        // Save data to MongoDB collections mava
         const newRequest = new Certificate({ ...req.body, status: 'Pending' });
         await newRequest.save();
-        console.log("✅ Data saved to MongoDB successfully mava!");
+        console.log("✅ Data saved to MongoDB successfully!");
 
-        // Step 2: SAFETY SHIELD PIPELINE MAVA
-        // Mail failure valla frontend freeze avvakudadhu kabatti, dhanni separate try-catch block lo pettanu
+        // Triggering IPv4 Alert Mail over a safe secondary try block
         try {
-            console.log("🔄 Initiating admin SMTP alert notification channel...");
-            await sendAdminNotification(newRequest); 
-            console.log("✅ Admin notification transmitted successfully!");
-        } catch (mailError) {
-            // Mail fail ayina console lo print chesi bypass chesthadhi, server running thread freeze avvadhu!
-            console.error("⚠️ Background SMTP Warning: Notification delayed, but DB data saved safe:", mailError.message);
+            await sendAdminNotification(newRequest);
+            console.log("✅ Admin notification email sent successfully mava!");
+        } catch (mailErr) {
+            console.error("⚠️ Email delay warning but database is safe:", mailErr.message);
         }
 
-        // Step 3: Frontend ki instant response code release chesthunnam
-        return res.status(201).json({ 
-            success: true, 
-            message: "Submission success! Triggering status popup modal." 
-        });
+        // Return positive response to payment.js instantly
+        return res.status(201).json({ success: true });
 
     } catch (err) {
-        console.error("❌ Critical Database Request Pipeline Error:", err.message);
-        return res.status(500).json({ success: false, message: "Internal Server Error: " + err.message });
+        console.error("❌ Request Pipeline Failure:", err.message);
+        return res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// 2. User Status Check (Email tho verify cheyadaniki)
+// 2. User Status Check
 router.get('/status/:email', async (req, res) => {
     try {
         const user = await Certificate.findOne({ userEmail: req.params.email }).sort({ createdAt: -1 });
@@ -59,15 +50,11 @@ router.get('/status/:email', async (req, res) => {
     }
 });
 
-// 3. MAIN VERIFICATION: Certificate ID tho vethukuthunnam
-// QR code scan chesina, verify.html lo ID enter chesina ide trigger avtundi
+// 3. Main ID Verification
 router.get('/verify/:id', async (req, res) => {
     try {
         const cert = await Certificate.findOne({ certificateId: req.params.id });
-
-        if (!cert) {
-            return res.status(404).json({ success: false, message: "Invalid ID, records not found!" });
-        }
+        if (!cert) return res.status(404).json({ success: false, message: "Invalid ID!" });
 
         res.json({
             success: true,
@@ -78,29 +65,18 @@ router.get('/verify/:id', async (req, res) => {
             issuedAt: cert.createdAt
         });
     } catch (err) {
-        res.status(500).json({ success: false, message: "Server Error mava!" });
+        res.status(500).json({ success: false, message: "Server Error" });
     }
 });
 
-// 4. Middleware: Admin Authentication
+// 4. Admin Middleware
 const authAdmin = (req, res, next) => {
     const key = req.headers['x-admin-key'];
     if (key === process.env.ADMIN_SECRET_KEY) {
         next();
     } else {
-        res.status(403).json({ message: "Forbidden: Neeku access ledu mava!" });
+        res.status(403).json({ message: "Forbidden mava!" });
     }
 };
 
-// Admin pending requests fetch cheyadaniki
-router.get('/admin/pending', authAdmin, async (req, res) => {
-    try {
-        const requests = await Certificate.find({ status: 'Pending' });
-        res.json(requests);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-// Export elements properly
 module.exports = { router, authAdmin };

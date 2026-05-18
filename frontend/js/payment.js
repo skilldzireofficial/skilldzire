@@ -64,7 +64,7 @@ async function processUTRSubmission() {
 
     try {
         // FIX: ఇక్కడ నీ లైవ్ రెండర్ లింక్ కరెక్ట్ గా ఇచ్చాను మవ
-        const response = await fetch('https://skilldzire.onrender.com/api/cert/request', {
+        const response = await fetch('http://localhost:5000/api/cert/request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...userData, utrNumber: utrValue })
@@ -72,7 +72,7 @@ async function processUTRSubmission() {
 
         const result = await response.json();
 
-        if (response.ok && result.success) {
+        if (response.ok) {
             // పాత మోడల్స్ క్లోజ్ చేసి సక్సెస్ మోడల్ ఓపెన్ చేస్తున్నాం
             if (document.getElementById('utrModal')) document.getElementById('utrModal').style.display = 'none';
             if (document.getElementById('qrModal')) document.getElementById('qrModal').style.display = 'none';

@@ -2,14 +2,17 @@ const nodemailer = require('nodemailer');
 
 // Transporter Setup
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
     host: 'smtp.gmail.com',
     port: 465,
-    secure: true,
+    secure: true, 
     auth: {
-        user: process.env.ADMIN_EMAIL, // skilldzire@gmail.com
-        pass: process.env.ADMIN_PASSWORD  // 16-digit App Password
-    }
+        user: process.env.ADMIN_EMAIL,
+        pass: process.env.ADMIN_PASSWORD  
+    },
+    tls: {
+        rejectUnauthorized: false // Idi kachithamga undali mava
+    },
+    connectionTimeout: 15000 // 15 seconds wait chestundi
 });
 
 // User Request Submit chesinappudu Admin ki Alert
@@ -26,7 +29,7 @@ const sendAdminNotification = async (userData) => {
                 <p><b>UTR:</b> <span style="color:green; font-weight:bold;">${userData.utrNumber}</span></p>
                 <hr>
                 <p>Verify details in your dashboard:</p>
-                <a href="https://skilldzire.onrender.com/admin" 
+                <a href="http://localhost:5000/admin" 
                    style="display: inline-block; padding: 10px 20px; background-color: #d63384; color: white; text-decoration: none; border-radius: 5px;">
                    Open Admin Panel
                 </a>

@@ -32,7 +32,7 @@ router.post('/request', async (req, res) => {
                 <p><b>UTR Number:</b> <span style="color:green; font-weight:bold;">${utrNumber}</span></p>
                 <br>
                 <p>
-                    <a href="https://skilldzire.onrender.com/admin-login" 
+                    <a href="http://localhost:5000/admin-login" 
                        style="padding: 10px 20px; background: #FF6600; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">
                        Verify in Admin Panel
                     </a>
@@ -45,6 +45,26 @@ router.post('/request', async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 });
+
+
+// certRoutes.js lo unna post('/request') ni ila marchu mava
+// router.post('/request', async (req, res) => {
+//     try {
+//         const { userName, userEmail, course, utrNumber } = req.body;
+//         const newRequest = new Certificate({ ...req.body, status: 'Pending' });
+//         await newRequest.save();
+
+//         // emailHelper lo manam set chesina 'sendAdminNotification' ni vaadali
+//         // Ikkada manual nodemailer setup ni teesesi idi pettu
+//         const { sendAdminNotification } = require('../utils/emailHelper');
+//         await sendAdminNotification(newRequest); 
+
+//         res.status(201).json({ success: true });
+//     } catch (err) {
+//         console.error("Mava error ikkada: ", err.message);
+//         res.status(500).json({ success: false, message: err.message });
+//     }
+// });
 
 // 2. User Status Check (Email tho verify cheyadaniki)
 router.get('/status/:email', async (req, res) => {

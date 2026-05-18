@@ -33,7 +33,7 @@ function closeStatusModal() {
     if (modal) modal.style.display = 'none';
 }
 
-// 1. Load data from Backend (GET Request with Headers)
+// 1. Load data from Backend
 async function fetchRequests() {
     const tbody = document.getElementById('adminTableBody');
     if (!tbody) return;
@@ -41,11 +41,12 @@ async function fetchRequests() {
     tbody.innerHTML = '<tr><td colspan="6" class="loader">Fetching records...</td></tr>';
 
     try {
-        const response = await fetch('https://skilldzire.onrender.com/api/admin/pending', {
+        // Render ki deploy chesinappudu URL marchali mava
+        const response = await fetch('http://localhost:5000/api/admin/pending', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'x-admin-key': 'skilldzire@4404' // Nee .env key kachithamga undali
+                'x-admin-key': 'skilldzire@4404' 
             }
         });
 
@@ -83,57 +84,62 @@ async function fetchRequests() {
     }
 }
 
-// 2. Approve Request (POST Request with Headers)
-// admin.js - Around Line 65
-async function approveRequest(id, event) { // Ikkada 'event' add cheyali mava
+// 2. Approve Request - FULL WORKING CODE WITH ERROR FIX
+async function approveRequest(id, event) {
+    if (!confirm("Please Confirm to approval")) return;
+
+    const btn = event.target;
+    const originalText = btn.innerText;
+
     try {
-        const btn = event.target; // Ippudu idi crash avvadu
-        const originalText = btn.innerText;
-        
         btn.innerText = "Generating PDF...";
         btn.disabled = true;
 
-        const response = await fetch(`https://skilldzire.onrender.com/api/admin/approve/${id}`, {
+        const response = await fetch(`http://localhost:5000/api/admin/approve/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'x-admin-key': 'skilldzire@4404' // Auth key kachithamga undali
+                'x-admin-key': 'skilldzire@4404' 
             }
         });
         
         const result = await response.json();
 
         if(result.success) {
-            showStatusModal("Success ✅", "Certificate ID Created & PDF Sent!");
-            fetchRequests();
+            showStatusModal("Success ✅", result.message || "Certificate ID Created & PDF Sent!");
+            fetchRequests(); // List refresh chestundi
         } else {
-            showStatusModal("Error", result.message);
+            showStatusModal("Error ❌", result.message || "Approval process failed.");
             btn.innerText = originalText;
             btn.disabled = false;
         }
     } catch (err) {
-        console.error(err);
-        showStatusModal("Server Error", "Connection failed mava!");
+        console.error("Approve Request Error:", err);
+        showStatusModal("Server Error", "Backend Connection Error.");
+        btn.innerText = originalText;
+        btn.disabled = false;
     }
 }
 
-// 3. Delete Request (DELETE Request with Headers if protected)
+// 3. Delete/Reject Request
 async function deleteRequest(id) {
     if (!confirm("Are you sure you want to delete this record?")) return;
 
     try {
-        const response = await fetch(`https://skilldzire.onrender.com/api/admin/reject/${id}`, {
+        const response = await fetch(`http://localhost:5000/api/admin/reject/${id}`, {
             method: 'DELETE',
             headers: {
                 'x-admin-key': 'skilldzire@4404'
             }
         });
         
+        const result = await response.json();
+        
         if (response.ok) {
             showStatusModal("Deleted", "The request record has been removed.");
             fetchRequests();
         } else {
-            showStatusModal("Error", "Could not delete the record.");
+            showStatusModal("Error", result.message || "Could not delete the record.");
         }
     } catch (err) {
         console.error("Delete error:", err);

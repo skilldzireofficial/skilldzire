@@ -5,8 +5,8 @@ const QRCode = require('qrcode');
 
 const generateCertificate = async (userData) => {
     return new Promise(async (resolve, reject) => {
-        // Path resolution for Render
-        const assetsDir = path.resolve(__dirname, '../assets');
+        // Path resolution for Render and Localhost
+        const assetsDir = path.join(__dirname, '../assets');
         const fileName = `Cert_${userData._id}.pdf`;
         const filePath = path.join(assetsDir, fileName);
         const templatePath = path.join(assetsDir, 'template.png');
@@ -38,21 +38,30 @@ const generateCertificate = async (userData) => {
 
             // 3. QR Code & Cert ID
             const certID = `SD-${userData._id.toString().slice(-6).toUpperCase()}`;
+            // Render lo verification url ki id pass chesthunnam
             const verifyURL = `https://skilldzire.onrender.com/verification?id=${certID}`;
             const qrCodeData = await QRCode.toDataURL(verifyURL);
             
             doc.image(qrCodeData, 380, 440, { width: 85, height: 85 });
 
             doc.fontSize(12).font('Helvetica-Bold').fillColor('#d63384')
-               .text(certID, 185, 518); 
+               .text(certID, 185, 518);
 
             doc.end();
 
-            stream.on('finish', () => resolve(fileName));
-            stream.on('error', (err) => reject(err));
+            // FIX: Stream poorthi ayyaka full filePath pampali
+            stream.on('finish', () => {
+                console.log("PDF Generated successfully mava!");
+                resolve(filePath); 
+            });
+            
+            stream.on('error', (err) => {
+                console.error("PDF Stream Error:", err);
+                reject(err);
+            });
 
         } catch (error) {
-            console.error("PDF Generation Error:", error);
+            console.error("PDF Catch Error:", error);
             reject(error);
         }
     });

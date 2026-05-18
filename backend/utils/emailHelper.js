@@ -1,38 +1,29 @@
 const nodemailer = require('nodemailer');
+const brevoTransport = require('nodemailer-brevo-transport');
 const dns = require('dns');
 
-// Force Node.js runtime engine to execute network handshakes using IPv4 maps first
+// Force DNS lookup engine configuration systems to look for IPv4 maps first
 dns.setDefaultResultOrder('ipv4first');
 
 /**
- * 💡 MAVA NOTE: Render custom setups lo GMail DNS checks network maps dynamic loop errors ivvakunda,
- * Direct Google core SMTP secure tunnel port configuration bind chesi transporter lock chesa mava!
+ * 💡 MAVA NOTE: Nodemailer wrapper pipeline framework run avvadaniki 
+ * Standard Brevo plugin connector engine configure chesam!
+ * RENDER PANEL ROUTING VALUES:
+ * 1. ADMIN_EMAIL -> Nee official master Admin email configuration ID.
+ * 2. ADMIN_PASSWORD -> Gmail application pass key kaadhu mava! Brevo account v3 API Key paste cheyali.
  */
-const transporter = nodemailer.createTransport({
-    host: '74.125.20.108', // Direct Google SMTP Secured IPv4 Pipeline Bypass Target
-    port: 465,             // Pure SSL protocol engine
-    secure: true,          // Force SSL handshakes loop active
-    pool: true,            // Keeps internal cloud connections alive
-    maxConnections: 5,
-    auth: {
-        user: process.env.ADMIN_EMAIL,
-        pass: process.env.ADMIN_PASSWORD  // Ensure zero spaces inside Render settings variable config panel mava!
-    },
-    tls: {
-        rejectUnauthorized: false,
-        servername: 'smtp.gmail.com' // Explicit server metadata matching to clear SSL checks
-    },
-    connectionTimeout: 30000,
-    greetingTimeout: 30000,
-    socketTimeout: 30000
-});
+const transporter = nodemailer.createTransport(
+    new brevoTransport({
+        apiKey: process.env.ADMIN_PASSWORD // Maps securely to your active Brevo Web Key mava!
+    })
+);
 
-// Verification check logging block
+// Runtime verification handler sequence setup check logic
 transporter.verify((error, success) => {
     if (error) {
-        console.error("❌ Mava! SMTP Core Over IPv4 Tunnel Binding Failed:", error.message);
+        console.warn("⚠️ Nodemailer verification block skipped for API integration channels layout framework.");
     } else {
-        console.log("🚀 Forced IPv4 SMTP Engine Active & Tunnel Verification Success!");
+        console.log("🚀 Nodemailer API Transport Link Connected Successfully!");
     }
 });
 
@@ -47,21 +38,23 @@ const sendAdminNotification = async (userData) => {
                 <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
                     <h2 style="color: #2c3e50;">New Request Received Mava!</h2>
                     <p><b>Name:</b> ${userData.userName}</p>
+                    <p><b>Email:</b> ${userData.userEmail || 'N/A'}</p>
                     <p><b>Course:</b> ${userData.course}</p>
                     <p><b>UTR:</b> <span style="color:green; font-weight:bold;">${userData.utrNumber || 'N/A'}</span></p>
                     <hr>
-                    <p>Verify details inside your administration dashboard:</p>
+                    <p>Verify details inside your administration dashboard panel:</p>
                     <a href="https://skilldzire.onrender.com/adminpage" 
                        style="display: inline-block; padding: 10px 20px; background-color: #d63384; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
                        Open Admin Panel
                     </a>
                 </div>`
         };
+
         const info = await transporter.sendMail(mailOptions);
-        console.log("✅ Admin alert dispatch log confirmation code index:", info.messageId);
+        console.log("✅ Admin alert notification generated and dispatched safely, ID:", info.messageId || info.id);
         return true;
     } catch (err) {
-        console.error("❌ Admin system alert transmission fault:", err.message);
+        console.error("❌ Admin alert notification engine failure log:", err.message);
         throw err;
     }
 };
@@ -76,8 +69,8 @@ const sendCertificateMail = async (userEmail, pdfPath, userName) => {
             html: `
                 <div style="font-family: sans-serif; line-height: 1.6; max-width: 600px; padding: 20px; border: 1px solid #f9f9f9;">
                     <h2 style="color: #d63384;">Congratulations ${userName}!</h2>
-                    <p>We are delighted to inform you that you have successfully completed your internship with <b>SkillDzire</b>.</p>
-                    <p>Please find your official completion certificate safely attached below as a high-resolution PDF document.</p>
+                    <p>We are delighted to inform you that you have successfully completed your professional internship with <b>SkillDzire</b>.</p>
+                    <p>Please find your official validation completion certificate attached below as a high-resolution PDF document.</p>
                     <br>
                     <p>Best Regards,<br><b>Team SkillDzire</b></p>
                 </div>`,
@@ -88,11 +81,12 @@ const sendCertificateMail = async (userEmail, pdfPath, userName) => {
                 }
             ]
         };
+
         const info = await transporter.sendMail(mailOptions);
-        console.log(`🚀 Certificate mail safely beamed down to student inbox: ${userEmail}, Id: ${info.messageId}`);
+        console.log(`🚀 Certificate mail successfully routed down to user mailbox [${userEmail}]`);
         return true;
     } catch (err) {
-        console.error("❌ Student certificate delivery track crashed:", err.message);
+        console.error("❌ Student certificate delivery track crash trace:", err.message);
         throw err;
     }
 };

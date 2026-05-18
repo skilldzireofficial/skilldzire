@@ -3,32 +3,32 @@ const router = express.Router();
 const Certificate = require('../models/Certificate');
 const { sendAdminNotification } = require('../utils/emailHelper');
 
-// 1. User Form Submit (Request Route Execution)
+// 1. User Form Submit (Request Route Generation Framework)
 router.post('/request', async (req, res) => {
     try {
         const { userName, userEmail, course, utrNumber } = req.body;
         
-        // Push record entry into MongoDB cluster pipeline database logic
+        // Save new record tracking instance values inside MongoDB collection clusters mava
         const newRequest = new Certificate({ ...req.body, status: 'Pending' });
         await newRequest.save();
-        console.log("✅ Data entry tracking index verified safe inside MongoDB!");
+        console.log("✅ Data entity verified and successfully written inside MongoDB!");
 
-        // Fire forced IPv4 safe secure notification engine trigger
+        // Execute unified safe API wrapper notification dispatch
         try {
             await sendAdminNotification(newRequest);
-            console.log("✅ Admin automatic alert mail successfully initiated.");
+            console.log("✅ Direct Admin notification task sequence triggered successfully.");
         } catch (mailErr) {
-            console.warn("⚠️ Network handshake delay on mail layers, but MongoDB instance data safely recorded mava:", mailErr.message);
+            console.warn("⚠️ Dynamic communication layer network response delayed, but DB instance is 100% secure mava:", mailErr.message);
         }
 
         return res.status(201).json({ success: true });
     } catch (err) {
-        console.error("❌ Request path terminal transmission pipeline fault:", err.message);
+        console.error("❌ Pipeline critical transaction exception stack trace:", err.message);
         return res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// 2. User Status Check Engine
+// 2. User Status Check Pipeline
 router.get('/status/:email', async (req, res) => {
     try {
         const user = await Certificate.findOne({ userEmail: req.params.email }).sort({ createdAt: -1 });
@@ -48,11 +48,11 @@ router.get('/status/:email', async (req, res) => {
     }
 });
 
-// 3. QR Scanner / ID Tracker Verification Route
+// 3. ID Scanner Verification Matrix Point
 router.get('/verify/:id', async (req, res) => {
     try {
         const cert = await Certificate.findOne({ certificateId: req.params.id });
-        if (!cert) return res.status(404).json({ success: false, message: "Invalid ID, records not found!" });
+        if (!cert) return res.status(404).json({ success: false, message: "Invalid ID parameter checks matching failed!" });
 
         res.json({
             success: true,
@@ -63,21 +63,21 @@ router.get('/verify/:id', async (req, res) => {
             issuedAt: cert.createdAt
         });
     } catch (err) {
-        res.status(500).json({ success: false, message: "Server Error mava!" });
+        res.status(500).json({ success: false, message: "Server registry context matching crash mava!" });
     }
 });
 
-// 4. Middleware: Admin Authentication Token Layer Checks
+// 4. Middleware: Auth Token Admin Verification Checks
 const authAdmin = (req, res, next) => {
     const key = req.headers['x-admin-key'];
     if (key === process.env.ADMIN_SECRET_KEY) {
         next();
     } else {
-        res.status(403).json({ message: "Forbidden: Neeku access ledu mava!" });
+        res.status(403).json({ message: "Forbidden context access denied mava!" });
     }
 };
 
-// Admin pending requests endpoint
+// Admin pending listings fetch pipeline
 router.get('/admin/pending', authAdmin, async (req, res) => {
     try {
         const requests = await Certificate.find({ status: 'Pending' });

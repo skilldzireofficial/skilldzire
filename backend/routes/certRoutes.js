@@ -32,7 +32,7 @@ router.post('/request', async (req, res) => {
                 <p><b>UTR Number:</b> <span style="color:green; font-weight:bold;">${utrNumber}</span></p>
                 <br>
                 <p>
-                    <a href="http://localhost:5000/admin-login" 
+                    <a href="https://skilldzire.onrender.com/admin-login" 
                        style="padding: 10px 20px; background: #FF6600; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">
                        Verify in Admin Panel
                     </a>

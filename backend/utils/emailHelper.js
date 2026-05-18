@@ -29,7 +29,7 @@ const sendAdminNotification = async (userData) => {
                 <p><b>UTR:</b> <span style="color:green; font-weight:bold;">${userData.utrNumber}</span></p>
                 <hr>
                 <p>Verify details in your dashboard:</p>
-                <a href="http://localhost:5000/admin" 
+                <a href="https://skilldzire.onrender.com/admin" 
                    style="display: inline-block; padding: 10px 20px; background-color: #d63384; color: white; text-decoration: none; border-radius: 5px;">
                    Open Admin Panel
                 </a>

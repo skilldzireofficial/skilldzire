@@ -64,7 +64,7 @@ async function processUTRSubmission() {
 
     try {
         // FIX: ఇక్కడ నీ లైవ్ రెండర్ లింక్ కరెక్ట్ గా ఇచ్చాను మవ
-        const response = await fetch('http://localhost:5000/api/cert/request', {
+        const response = await fetch('https://skilldzire.onrender.com/api/cert/request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...userData, utrNumber: utrValue })

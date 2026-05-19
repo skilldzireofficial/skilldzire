@@ -38,7 +38,7 @@ app.get('/ping', (req, res) => {
 
 setInterval(() => {
     // Nee Render Link update chesa mava
-    const backendUrl = 'http://localhost:5000/ping';
+    const backendUrl = 'https://skilldzire.onrender.com/ping';
     axios.get(backendUrl)
         .then(() => console.log('Self-ping: Server is awake!'))
         .catch(err => console.error('Self-ping failed:', err.message));

@@ -124,7 +124,7 @@ const generateCertificate = async (userData) => {
                .text(finalIssuedOn, 530, 1320, { width: 2048, align: 'left' });
 
             // --- STEP 9: QR Code Generation & Exact Center High-Res Scaling ---
-            const verifyURL = `http://localhost:5000/verification?id=${certID}`;
+            const verifyURL = `https://skilldzire.onrender.com/verification?id=${certID}`;
             
             const qrBuffer = await QRCode.toBuffer(verifyURL, {
                 errorCorrectionLevel: 'H',

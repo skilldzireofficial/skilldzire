@@ -3,27 +3,41 @@ const router = express.Router();
 const Certificate = require('../models/Certificate');
 const { sendAdminNotification } = require('../utils/emailHelper');
 
-// 1. User Form Submit (Request Route Generation Framework)
+// 1. User Form Submit (Request Route)
 router.post('/request', async (req, res) => {
     try {
-        const { userName, userEmail, course, utrNumber } = req.body;
+        const { userName, userEmail, course, utrNumber, branchRoll, collegeName, startDate, endDate } = req.body;
         
-        // Save new record tracking instance values inside MongoDB collection clusters mava
-        const newRequest = new Certificate({ ...req.body, status: 'Pending' });
-        await newRequest.save();
-        console.log("✅ Data entity verified and successfully written inside MongoDB!");
+        // 🔥 FIX: startDate and endDate ని కలిపి "YYYY-MM-DD to YYYY-MM-DD" లాగా మారుస్తున్నాం mava!
+        let calculatedDuration = "May-2026 to July-2026"; 
+        if (startDate && endDate) {
+            calculatedDuration = `${startDate} to ${endDate}`;
+        }
 
-        // Execute unified safe API wrapper notification dispatch
+        // Schema లో ఉన్న duration ఫీల్డ్ కి పంపిస్తున్నాం
+        const newRequest = new Certificate({ 
+            userName,
+            userEmail,
+            course,
+            utrNumber,
+            branchRoll,
+            collegeName,
+            duration: calculatedDuration, // 👈 formatted duration lines!
+            status: 'Pending' 
+        });
+        
+        await newRequest.save();
+        console.log("✅ MongoDB data entries saved cleanly mava!");
+
         try {
             await sendAdminNotification(newRequest);
-            console.log("✅ Direct Admin notification task sequence triggered successfully.");
         } catch (mailErr) {
-            console.warn("⚠️ Dynamic communication layer network response delayed, but DB instance is 100% secure mava:", mailErr.message);
+            console.warn("⚠️ Admin mail delayed but database is safe:", mailErr.message);
         }
 
         return res.status(201).json({ success: true });
     } catch (err) {
-        console.error("❌ Pipeline critical transaction exception stack trace:", err.message);
+        console.error("❌ Database Transaction Error:", err.message);
         return res.status(500).json({ success: false, message: err.message });
     }
 });

@@ -1,208 +1,628 @@
+/* =================================================================
+   🎯 SKILLDZIRE CENTRAL STYLE SHEET (BLACK & ORANGE THEME | WHITE BACKGROUND)
+   ================================================================= */
 :root {
-    --primary: #ff6600;
-    --black: #000000;
-    --dark-grey: #121212;
-    --input-bg: #1e1e1e;
-    --text-white: #ffffff;
-    --text-dim: #b3b3b3;
+    --primary: orangered;        /* SkillDzire Glowing Premium Orange Accent */
+    --bg-dark: #ffffff;        /* ✨ INVERTED: Pure Clean Bright White Canvas Background */
+    --card-bg: #dfe2e6;        /* ✨ INVERTED: Muted Light Grey Premium Panel Canvas */
+    --text-main: #000000;      /* ✨ INVERTED: High Contrast Deep Jet Black Bold Text */
+    --text-dim: #7c7373;       /* ✨ INVERTED: Soft Gray Balanced Neutral Sub-titles */
+    --border: #565555;         /* ✨ INVERTED: Discrete Light Border Grid Lines Boundary */
+    --dark-grey: #f1f3f5;      /* ✨ INVERTED: Soft Alternative Sub-Panel Fills Grid */
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
 }
 
 body {
-    background-color: var(--black);
-    color: var(--text-white);
-    line-height: 1.6;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
 }
 
-/* Navbar */
+/* =================================================================
+   🧱 GLOBAL PREMIUM HEADER NAVIGATION BAR WITH RUNTIME SLIDING TRACKER
+   ================================================================= */
 nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 5%;
-    background: rgba(0, 0, 0, 0.9);
-    border-bottom: 1px solid #222;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    padding: 15px 5%;
+    background-color: var(--bg-dark); /* Header top canvas remains premium pure black layout as requested mava */
+    position: relative;
+    z-index: 1005;
+    border-bottom: 2px solid var(--primary); /* Glowing partition grid dividing line */
 }
 
 .logo {
     font-size: 1.5rem;
     font-weight: 800;
-    text-transform: uppercase;
+    color: #000; /* White logo base stands sharp over black header background */
+    z-index: 1010;
+    letter-spacing: 2px;
 }
 
-.logo span { color: var(--primary); }
 
+/* .logo span { 
+    color: var(--primary); 
+} */
+
+.logo img{
+    width:130px;
+     /* height: 100px; */
+}
+
+/* Desktop Anchor Items Wrapper Layout Container */
 .nav-links {
     display: flex;
     list-style: none;
+    gap: 35px;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    position: relative; /* Context tracking bounding coordinates for computing dynamic sliding lines offsets */
 }
 
-.nav-links li { margin-left: 20px; }
-
-.nav-links a {
-    text-decoration: none;
-    color: var(--text-white);
-    font-size: 0.9rem;
-    transition: 0.3s;
-}
-
-.nav-links a:hover { color: var(--primary); }
-
-/* Hero Section */
-.hero {
-    height: calc(100vh - 80px);
+/* Consistent inline item sizes array mapping configuration mava */
+.nav-links li {
+    position: relative;
+    padding: 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 20px;
-    background: radial-gradient(circle at center, #1a100a 0%, #000 100%);
+}
+
+.nav-links li a {
+    color: var(--text-main); /* White navigation headers clear standing contrasts layout grids mava */
+    text-decoration: none;
+    letter-spacing: 1.4px;
+    font-weight: bold;
+    font-size: 1.05rem;
+    transition: color 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    display: inline-block;
+    padding: 4px 6px;
+}
+
+/* Hover dynamic text highlights indicator recognition loops */
+.nav-links li a:hover {
+    color: var(--primary);
+}
+
+/* 🔥 Active Tab Target Anchor Inline Logic Trigger Class */
+.nav-links li.active-tab-item a {
+    color: var(--primary) !important;
+    font-weight: 600;
+}
+
+/* ✨ THE ORGANIC CONTINUOUS SLIDING INDICATOR BORDER LINE ASSET MAVA */
+.nav-indicator-line {
+    position: absolute;
+    bottom: -15px; /* Offset index aligning directly at the bottom base row layout interface grid */
+    height: 4px;
+    background-color: var(--primary);
+    border-radius: 4px;
+    box-shadow: 0 0 12px rgba(255, 152, 0, 0.7);
+    
+    /* 🔥 This triggers the smooth horizontal glide shifting transition effect from element to element mava! */
+    transition: left 0.35s cubic-bezier(0.25, 1, 0.5, 1), width 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none; /* Mouse collision intercept filter */
+}
+
+/* Premium Navigation Dynamic Action Button Outline Setup */
+.status-btn {
+    color: var(--text-main);
+    padding: 6px 16px !important;
+    border-radius: 6px;
+    background: transparent;
+    font-weight: 600;
+    transition: all 0.3s ease !important;
+}
+
+
+/* 🍔 DYNAMIC HAMBURGER STRUCTURE MECHANICS (Untouched as requested mava) */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 6px;
+    background: none;
+    border: none;
+    padding: 5px;
+    z-index: 1010;
+}
+
+.hamburger span {
+    display: block;
+    width: 28px;
+    height: 3px;
+    background-color:var(--text-dim);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* ❌ TRANSFORM MATRIX CROSS EFFECT LOGIC */
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+    background-color: var(--primary);
+}
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+    transform: translateX(10px);
+}
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -7px);
+    background-color: var(--primary);
+}
+
+/* Blur Background Window Overlay Layer configuration */
+.nav-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.nav-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* =================================================================
+   🏠 INDEX / HERO CORE STYLES (BRIGHT WHITE CANVAS CONFIGURATION)
+   ================================================================= */
+.hero {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    text-align: center;
+    background-color: var(--bg-dark);
 }
 
 .hero-content {
-    text-align: center;
-    max-width: 800px;
+    max-width: 700px;
 }
 
 .hero-content h1 {
-    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-size: 3.5rem;
     font-weight: 800;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    color: #000000; /* Strong contrast premium text mava */
+    letter-spacing: 0.5px;
+}
+.hero-content h1 span {
+    color: var(--primary);
 }
 
-.hero-content h1 span { color: var(--primary); }
-
 .hero-content p {
-    font-size: clamp(1rem, 3vw, 1.2rem);
+    font-size: 1.2rem;
     color: var(--text-dim);
     margin-bottom: 30px;
+    line-height: 1.6;
 }
 
 .btn-primary {
-    padding: 15px 40px;
-    background: var(--primary);
-    color: #000;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 700;
+    background-color: #000000; /* Sharp premium high-contrast theme button action mava */
+    color: #ffffff;
+    border: 2px solid #000000;
+    padding: 14px 35px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
     cursor: pointer;
-    text-transform: uppercase;
-    transition: 0.3s;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
-
 .btn-primary:hover {
-    background: #ff8533;
-    transform: translateY(-3px);
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
 }
 
-/* Modal Overlay */
+/* MODAL CONTAINER CONFIGURATIONS OVER THE LIGHT WHITE THEME CANVAS */
 .modal {
-    display: none;
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.6); /* Translucent dark mask sheet */
+    display: none;
     z-index: 2000;
-    overflow-y: auto; /* For small screens */
-    padding: 20px;
+    overflow-y: auto;
 }
 
 .modal-content {
-    background: var(--dark-grey);
-    max-width: 500px;
-    margin: 40px auto;
-    padding: 30px;
-    border-radius: 8px;
-    border-top: 4px solid var(--primary);
+    background-color: #ffffff; /* Clean light layout sheet box content modal background */
+    margin: 5% auto;
+    padding: 40px;
+    width: 90%;
+    max-width: 550px;
+    border-radius: 12px;
+    border: 1px solid #dcdcdc;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     position: relative;
 }
 
 .close-btn {
     position: absolute;
-    top: 15px; right: 20px;
+    right: 25px; top: 20px;
     font-size: 2rem;
-    color: var(--text-dim);
+    color: #888888;
     cursor: pointer;
+    transition: 0.3s;
+}
+.close-btn:hover {
+    color: var(--primary);
 }
 
-h2 {
-    text-align: center;
+.modal-content h2 {
+    color: #000000;
     margin-bottom: 25px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-size: 1.8rem;
+    text-align: center;
+    font-weight: 800;
 }
 
-/* Form */
-.input-box { margin-bottom: 15px; }
-
-input, select {
+.input-box {
+    margin-bottom: 20px;
+}
+.input-box input, .input-box select {
     width: 100%;
-    padding: 12px 15px;
-    background: var(--input-bg);
-    border: 1px solid #333;
-    border-radius: 4px;
-    color: #fff;
+    padding: 14px;
+    background-color: #f9f9f9;
+    border: 1px solid var(--border);
+    color: #524e4e;
+    border-radius: 6px;
     font-size: 1rem;
-}
-
-input:focus, select:focus {
-    border-color: var(--primary);
     outline: none;
+    transition: border-color 0.2s ease;
+}
+.input-box input:focus, .input-box select:focus {
+    border-color: var(--primary);
+    background-color: #ffffff;
 }
 
 .duration-section {
-    background: #181818;
-    padding: 15px;
-    border-radius: 4px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    text-align: left;
 }
-
+.duration-section label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-dim);
+    font-weight: 500;
+}
 .date-flex {
     display: flex;
-    gap: 10px;
     align-items: center;
-    margin-top: 10px;
+    gap: 15px;
+}
+.date-flex input {
+    flex: 1;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border: 1px solid #cccccc;
+    color: #000000;
+    border-radius: 6px;
+    outline: none;
+}
+.date-flex input:focus {
+    border-color: var(--primary);
+    background-color: #ffffff;
 }
 
 .price-tag {
+    margin: 25px 0;
+    font-size: 1.2rem;
     text-align: center;
-    margin: 20px 0;
-    padding: 15px;
-    border: 1px dashed var(--primary);
+    color: #000000;
 }
-
 .price-tag span {
-    font-size: 1.5rem;
-    font-weight: 800;
     color: var(--primary);
+    font-weight: 700;
 }
 
 .submit-btn {
     width: 100%;
-    padding: 15px;
-    background: var(--primary);
-    color: #000;
+    background-color: var(--primary);
+    color: #ffffff;
+    padding: 14px;
     border: none;
-    border-radius: 4px;
-    font-weight: 700;
-    text-transform: uppercase;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+    transition: all 0.2s ease;
+}
+.submit-btn:hover {
+    background-color: #e68a00;
+    box-shadow: 0 4px 15px rgba(230, 138, 0, 0.3);
 }
 
-/* Responsive Breakpoints */
-@media (max-width: 600px) {
-    nav { padding: 15px 5%; }
-    .logo { font-size: 1.2rem; }
-    .hero-content h1 { font-size: 2.2rem; }
-    .modal-content { padding: 20px; margin: 10px auto; }
-    .date-flex { flex-direction: column; }
+/* =================================================================
+   📊 STATUS CONTAINER STYLES (CLEAN WHITE SHEET CANVAS TRANSFORMATION)
+   ================================================================= */
+.main-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    background-color: var(--bg-dark);
+}
+
+.status-wrapper {
+    width: 100%;
+    max-width: 900px;
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background-color: #ffffff;
+}
+
+.status-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+}
+
+.status-table th, .status-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.status-table th {
+    color: #000000;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background-color: #f1f3f5;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.status-table td {
+    color: #222222;
+}
+
+.status-pending { color: #b78103; font-weight: 600; } /* Adjusted contrast balance for high clarity visibility mava */
+.status-approved { color: #2e7d32; font-weight: 600; }
+
+.status-pending-glossy {
+    background: linear-gradient(90deg, #ff9800, #000000, #ff9800);
+    background-size: 200% auto;
+    color: #ffffff;
+    padding: 6px 15px;
+    border-radius: 5px;
+    font-weight: 700;
+    animation: glossyMove 2s linear infinite;
+    display: inline-block;
+}
+@keyframes glossyMove { to { background-position: 200% center; } }
+
+.edit-icon-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; margin-left: 10px; transition: 0.3s; }
+.edit-icon-btn:hover { transform: rotate(20deg) scale(1.2); }
+
+/* STATUS UPDATE MODAL SHEETS INTERNAL LIGHT THEME OVERLAYS */
+.modal-overlay {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none; justify-content: center; align-items: center;
+    z-index: 1020;
+}
+.modal-box {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid var(--primary);
+    width: 90%; max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.modal-box input, .modal-box select {
+    width: 100%; padding: 12px; margin: 10px 0;
+    background: #f8f9fa; border: 1px solid #ccdecb;
+    color: #000000; border-radius: 5px; box-sizing: border-box;
+}
+.modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+.btn-update { background: #000000; color: white; border: none; flex: 1; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: 600; transition: background 0.2s; }
+.btn-update:hover { background: var(--primary); color: black; }
+.btn-close { background: #e0e0e0; color: #333; border: none; flex: 1; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: 500; }
+.btn-close:hover { background: #d0d0d0; }
+
+#loading { text-align: center; color: var(--text-dim); padding: 20px 0; font-weight: 500; }
+
+/* =================================================================
+   🔍 VERIFY CARD CONTAINER CORE STYLES (LIGHT LAYOUT COMPLIANT)
+   ================================================================= */
+.verify-container { 
+    height: 80vh; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 20px;
+    background-color: var(--bg-dark);
+}
+
+.verify-card { 
+    background:var(--dark-grey);
+    padding: 40px; 
+    border-radius: 10px; 
+    width: 100%; 
+    max-width: 450px; 
+    text-align: center; 
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+.verify-card h2 {
+    color: #000000;
+    font-weight: 800;
+}
+.verify-card h2 span { 
+    color: var(--primary); 
+}
+
+.result-box { 
+    margin-top: 30px; 
+    padding: 20px; 
+    border-radius: 8px; 
+    background: #ffffff; 
+    display: none; 
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary); 
+    text-align: left; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+.result-box p { 
+    margin-bottom: 10px; 
+    font-size: 0.9rem; 
+    color: #111111;
+}
+.status-text { 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    color: var(--primary); 
+}
+
+#statusModal { 
+    display: none; 
+    position: fixed; 
+    z-index: 3000; 
+    left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.6); 
+}
+.status-content { 
+    background: #ffffff; 
+    margin: 15% auto; 
+    padding: 30px; 
+    border-radius: 10px; 
+    width: 90%; 
+    max-width: 350px; 
+    text-align: center; 
+    border: 1px solid var(--border);
+    border-bottom: 4px solid var(--primary); 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.status-content h3 { 
+    margin-bottom: 15px; 
+    color: #000000;
+    font-weight: 700;
+}
+.status-content p { 
+    color: #444444; 
+    margin-bottom: 20px; 
+}
+
+/* =================================================================
+   📱 ADAPTIVE MEDIA BREAKPOINT LAYOUT MODULE (RESPONSIVE VIEWPORT)
+   ================================================================= */
+@media screen and (max-width: 768px) {
+    .hamburger {
+        display: flex;
+    }
+
+    /* Mobile slide layout indicator asset hiding line parameter node */
+    .nav-indicator-line {
+        display: none !important;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        width: 280px;
+        background-color: rgba(10, 10, 10, 0.98); /* Sidebar panel menu container retains its stealth lookup profile */
+        border-left: 1px solid rgba(255, 152, 0, 0.2);
+        flex-direction: column;
+        justify-content: center;
+        gap: 40px;
+        padding-left: 40px;
+        z-index: 1000;
+        
+        transform: translateX(100%);
+        transition: transform 0.4s cubic-bezier(0.77, 0.2, 0.05, 1.0);
+        box-shadow: -5px 0 25px rgba(0, 0, 0, 0.6);
+    }
+
+    .nav-links.active {
+        transform: translateX(0);
+    }
+
+    .nav-links li {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 5px 0;
+    }
+
+    .nav-links li a {
+        font-size: 1.2rem;
+        display: block;
+        width: fit-content;
+        color: #ffffff;
+    }
+
+   
+    .nav-links li.active-tab-item a {
+        color: var(--primary) !important;
+    }
+
+    .hero {
+        padding: 100px 20px 40px 20px;
+    }
+    .hero-content h1 {
+        font-size: 2.3rem;
+    }
+    .hero-content p {
+        font-size: 1rem;
+    }
+    .modal-content {
+        width: 92%;
+        padding: 25px 20px;
+        background-color: #ffffff;
+    }
+    .date-flex {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    .main-container {
+        padding: 20px 10px;
+    }
+    .status-wrapper, .verify-card {
+        padding: 20px 15px;
+    }
+    h2 {
+        font-size: 1.4rem;
+    }
+    #scrollText {
+        font-size: 0.9rem !important;
+    }
 }

@@ -24,7 +24,11 @@ async function fetchStatus() {
 
         // Approved ayithe scroll text marchu
         if (isApproved) {
-            scrollText.innerHTML = `Approved by Admin <span style="color: #4caf50;">✅</span>`;
+            scrollText.innerHTML = `Approved Successfully <span style="color: rgb(26, 188, 26);">&#10004;</span>`;
+            scrollText.style.color = 'rgb(26, 188, 26)';
+            scrollText.style.background = 'rgba(198, 235, 198,0.5)';
+            scrollText.style.border = '1px solid rgb(55, 210, 55)';
+            scrollText.style.letterSpacing = '2px';
             scrollText.setAttribute('behavior', 'none'); 
         }
 

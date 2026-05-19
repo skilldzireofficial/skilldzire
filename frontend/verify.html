@@ -2,36 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SkillDzire | Verify Certificate</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .verify-container { height: 80vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .verify-card { background: var(--dark-grey); padding: 40px; border-radius: 10px; width: 100%; max-width: 450px; text-align: center; border: 1px solid #222; }
-        .verify-card h2 span { color: var(--primary); }
-        .result-box { margin-top: 30px; padding: 20px; border-radius: 8px; background: #181818; display: none; border-left: 4px solid var(--primary); text-align: left; }
-        .result-box p { margin-bottom: 10px; font-size: 0.9rem; }
-        .status-text { font-weight: 800; text-transform: uppercase; color: var(--primary); }
-
-        /* Custom Status Modal Styles */
-        #statusModal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
-        .status-content { background: #1a1a1a; margin: 15% auto; padding: 30px; border-radius: 10px; width: 90%; max-width: 350px; text-align: center; border-bottom: 4px solid var(--primary); }
-        .status-content h3 { margin-bottom: 15px; color: var(--primary); }
-        .status-content p { color: #ccc; margin-bottom: 20px; }
-        .status-btn { padding: 10px 25px; background: var(--primary); border: none; color: #000; font-weight: 700; cursor: pointer; border-radius: 4px; text-transform: uppercase; }
-    </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo">Skill<span>Dzire</span></div>
-        <ul class="nav-links">
+        <div class="logo"><img src="assets/logo.jpg" alt=""></div>
+        
+        <button class="hamburger" id="mobileMenuBtn" aria-label="Toggle Navigation Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <ul class="nav-links" id="navLinksList">
             <li><a href="/homepage">Home</a></li>
-            <li><a href="/checkstatus">Check Status</a></li>
-            <li><a href="/verification">Verify</a></li>
+            <li class="status-item"><a href="/checkstatus" class="status-btn">Check Status</a></li>
+            <li class="active-link"><a href="/verification">Verify</a></li>
         </ul>
     </nav>
+
+    <div class="nav-overlay" id="menuOverlay"></div>
 
     <div class="verify-container">
         <div class="verify-card">
@@ -62,5 +56,25 @@
     </div>
 
     <script src="js/verify.js"></script>
+    <script>
+        const hamburgerBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinksList');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        function toggleMenu() {
+            hamburgerBtn.classList.toggle('active');
+            navLinks.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            
+            if (navLinks.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        hamburgerBtn.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', toggleMenu);
+    </script>
 </body>
 </html>

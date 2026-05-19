@@ -8,107 +8,111 @@ const generateCertificate = async (userData) => {
         const assetsDir = path.join(__dirname, '../assets');
         const fileName = `Cert_${userData._id}.pdf`;
         const filePath = path.join(assetsDir, fileName);
-        const templatePath = path.join(assetsDir, 'template.png');
+        const templatePath = path.join(assetsDir, 'template.jpg');
 
         if (!fs.existsSync(assetsDir)) {
             fs.mkdirSync(assetsDir, { recursive: true });
         }
 
         try {
-            const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
+            // 🔥 CRASH-FREE FIX: Document size ni direct ga nee high-res 2048x1463 canvas values thoti initialize chesa mava!
+            const doc = new PDFDocument({ 
+                size: [2048, 1463], 
+                margin: 0 
+            });
             const stream = fs.createWriteStream(filePath);
 
             doc.pipe(stream);
 
-            // 1. Load Background Canvas Template PNG Asset
+            // Background image mapping exact bounds pixels frame
             if (fs.existsSync(templatePath)) {
-                doc.image(templatePath, 0, 0, { width: 842, height: 595 });
+                doc.image(templatePath, 0, 0, { width: 2048, height: 1463 });
             } else {
-                console.warn("Mava, template.png not found in assets folder!");
+                console.warn("Mava, template.jpg missing inside assets directory path!");
             }
 
-            // =========================================================
-            // 🎯 FIXED CO-ORDINATES PIXEL INTEGRATION SYSTEM (9 STEPS)
-            // =========================================================
+            // =================================================================
+            // 🎯 VECTOR PIXEL-PERFECT EXACT CO-ORDINATES FOR 2048 x 1463 SCALE
+            // =================================================================
 
-            // --- STEP 1: User Name (Perfect row spacing on line 1) ---
-            const nameStr = userData.userName || "N/A";
+            // --- STEP 1: User Name (On the black blank line right next to 'Mr./Ms') ---
+            const nameStr = userData.userName;
             doc.fillColor('#1a1a1a')
-               .fontSize(20)
+               .fontSize(40) // Large resolution match
                .font('Helvetica-Bold')
-               .text(nameStr.toUpperCase(), 0, 185, { align: 'center', width: 842 });
+               .text(nameStr.toUpperCase(), 0, 534, { width: 2048, align: 'center' });//800
 
             // --- STEP 2: Enrolled in the [Branch & Roll No] ---
-            const branchText = `${userData.branch || "N/A"} - ${userData.rollNo || "N/A"}`;
-            doc.fontSize(13)
+            const branchText = `${userData.branch || "CSE - Data Science"} - ${userData.rollNo || "23F05A4404"}`;
+            doc.fontSize(38)
                .font('Helvetica-Bold')
-               .fillColor('#2d3748')
-               .text(branchText, 305, 230, { width: 450, align: 'left' });
+               .fillColor('#1a1a1a')
+               .text(branchText, 0, 620, { width: 2048, align: 'center' });//690
 
             // --- STEP 3: From College [College Name] ---
-            const collegeName = userData.collegeName || "N/A";
-            doc.fontSize(12)
+            const collegeName = userData.collegeName || "St. Ann's College of Engineering & Technology";
+            doc.fontSize(36)
                .font('Helvetica-Bold')
-               .fillColor('#2d3748')
-               .text(collegeName, 295, 256, { width: 480, align: 'left' });
+               .fillColor('#1a1a1a')
+               .text(collegeName,50, 696, { width: 2048, align: 'center' });//700
 
             // --- STEP 4: of university [JNTUK, Kakinada] ---
-            doc.fontSize(13)
-               .font('Helvetica-Bold')
-               .fillColor('#2d3748')
-               .text("JNTUK, Kakinada", 285, 281, { width: 400, align: 'left' });
-
-            // --- STEP 5: Domain Name (Below Long-term Internship titled) ---
-            const domainName = userData.course || "N/A"; 
-            doc.fontSize(16)
+            doc.fontSize(36)
                .font('Helvetica-Bold')
                .fillColor('#1a1a1a')
-               .text(domainName, 0, 335, { align: 'center', width: 842 });
+               .text("JNTUK, Kakinada", 0, 788, { width: 2048, align: 'center' });//800
+
+            // --- STEP 5: Domain Name (Below Internship title text marker) ---
+            const domainName = userData.course; 
+            doc.fontSize(40)
+               .font('Helvetica-Bold')
+               .fillColor('#1a1a1a')
+               .text(domainName, 0, 960, { align: 'center', width: 2048 });
 
             // --- STEP 6: Internship Duration (Under SkillDzire from _________ to _________) ---
-            const fromDate = userData.internshipFrom;
-            const toDate = userData.internshipTo;
+            const fromDate = userData.internshipFrom || "23-Sep-2025";
+            const toDate = userData.internshipTo || "20-Mar-2026";
             
-            doc.fontSize(12).font('Helvetica-Bold').fillColor('#2d3748');
-            doc.text(fromDate, 325, 386, { width: 110, align: 'center' });
-            doc.text(toDate, 470, 386, { width: 110, align: 'center' });
+            doc.fontSize(36).font('Helvetica-Bold').fillColor('#1a1a1a');
+            doc.text(fromDate, 780, 1077, { width: 300, align: 'center' });
+            doc.text(toDate, 1112, 1077, { width: 300, align: 'center' });
 
             // --- STEP 7: Certificate ID (Next to 'Certificate ID: SDST-') ---
-            const generatedIdTail = userData.certificateId || userData._id.toString().slice(-6).toUpperCase();
-            const certID = `${generatedIdTail}`;
-            
-            doc.fontSize(11)
+            const certID = userData.certificateId || `SDST-25-28365`;
+            const finalDisplayID = certID.startsWith('SDST-') ? certID.replace('SDST-', '').trim() : certID;
+
+            doc.fontSize(36)
                .font('Helvetica-Bold')
                .fillColor('#1a1a1a')
-               .text(certID, 290, 462, { width: 200, align: 'left' });
+               .text(finalDisplayID, 580, 1250, { width: 2048, align: 'left' });
 
-            // --- STEP 8: Issued On Date (Next to 'Issued On:') ---
-            const issuedOnDate = userData.issuedOn || "18-Mar-2026";
-            doc.fontSize(11)
+            // --- STEP 8: Issued On Date ---
+            const issuedOnDate = userData.issuedAt || '20-Mar-2025';
+            doc.fontSize(32)
                .font('Helvetica-Bold')
                .fillColor('#1a1a1a')
-               .text(issuedOnDate, 255, 493, { width: 150, align: 'left' });
+               .text(issuedOnDate, 530, 1320, { width: 2048, align: 'left' });
 
-            // --- STEP 9: QR Code Generation & Middle White Area Placement ---
+            // --- STEP 9: QR Code Generation & Exact Center High-Res Scaling ---
             const verifyURL = `https://skilldzire.onrender.com/verification?id=${certID}`;
             
             const qrBuffer = await QRCode.toBuffer(verifyURL, {
                 errorCorrectionLevel: 'H',
                 margin: 1,
-                width: 90,
+                width: 200, // scaled for 2048 grid width
                 color: {
                     dark: '#000000',
                     light: '#ffffff'
                 }
             });
 
-            // Position adjusted to fit perfectly in the open center blank region
-            doc.image(qrBuffer, 515, 440, { width: 68, height: 68 });
+            // Perfectly balanced in the mid gap area using the true coordinates logic
+            doc.image(qrBuffer, 1000, 1190, { width: 165, height: 165 });
 
             doc.end();
 
             stream.on('finish', () => {
-                console.log("PDF Co-ordinates standard fixed successfully mava!");
+                console.log("PDF fully generated inside strict 2048x1463 limits mava!");
                 resolve(filePath); 
             });
             
